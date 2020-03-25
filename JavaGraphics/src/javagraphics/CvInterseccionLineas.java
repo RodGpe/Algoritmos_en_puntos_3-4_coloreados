@@ -11,7 +11,7 @@ class CvInterseccionLineas extends Canvas {
     float x0, y0, rWidth = 20F, rHeight = 20.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
     int centerX, centerY;
-    int numerodePuntos = 4;
+    int numerodePuntos = 10;
     float separacionMinima = .5f;
 
     CvInterseccionLineas() {
