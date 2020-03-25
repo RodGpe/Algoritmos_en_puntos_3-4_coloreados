@@ -28,7 +28,7 @@ class CvDefPoly extends Canvas {
     boolean ready = true;
     int centerX, centerY;
     int numerodePuntos = 30;
-    float separacionMinima = .1f;
+    float separacionMinima = .11f;
 
     CvDefPoly() {
         addMouseListener(new MouseAdapter() {
@@ -53,7 +53,7 @@ class CvDefPoly extends Canvas {
                 if (evt.getModifiers() == InputEvent.BUTTON3_MASK) {
                     ready = true;
                 }
-                //aqui empieza desmadre mio
+                //aqui empieza desastre mio
 //                System.out.println("x = " + xA);
 //                System.out.println("y = " + yA);
 //                Random r = new Random();
@@ -100,21 +100,21 @@ class CvDefPoly extends Canvas {
         initgr();
         int left = iX(-rWidth / 2), right = iX(rWidth / 2),
                 bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
-        g.drawRect(left, top, right - left, bottom - top);
+        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
         //AQUI hago todo mi desmadre para generar puntos aleatorios----------------------
         v = new Vector<Point2D>();
         vBlue = new Vector<Point2D>();
         Random r;//= new Random();
         for (int i = 0; i < numerodePuntos; i++) {
-            float minY = -(rHeight / 2);
-            float maxY = rHeight / 2;
+            float minY = (-(rHeight / 2))+.1f;
+            float maxY = (rHeight / 2 )-.1f;
             r = new Random();
             float randomRedY = minY + r.nextFloat() * (maxY - minY);
             r = new Random();
             float randomBlueY = minY + r.nextFloat() * (maxY - minY);
             System.out.println("random red y = " + randomRedY);
-            float minX = -(rWidth / 2);
-            float maxX = rWidth / 2;
+            float minX = (-(rWidth / 2))+.1f;
+            float maxX = (rWidth / 2)-.1f;
             r = new Random();
             float randomRedX = minX + r.nextFloat() * (maxX - minX);
             r = new Random();
@@ -125,7 +125,7 @@ class CvDefPoly extends Canvas {
             System.out.println("random blue x = " + randomBlueX);
             Point2D aVerificarBlue = new Point2D(randomBlueX, randomBlueY);
             while (verificarAlineacion(v, vBlue, aVerificarBlue)) {
-                System.out.println("estan alineados alv");
+                //System.out.println("quise poner un rojo pero esta alineado alv");
                 r = new Random();
                 randomBlueX = minX + r.nextFloat() * (maxX - minX);
                 r = new Random();
@@ -135,7 +135,7 @@ class CvDefPoly extends Canvas {
             vBlue.addElement(new Point2D(randomBlueX, randomBlueY));
             Point2D aVerificarRed = new Point2D(randomRedX, randomRedY);
             while (verificarAlineacion(v, vBlue, aVerificarRed)) {
-                System.out.println("estan alineados alv");
+                //System.out.println("quise poner un rojo pero esta alineado alv");
                 r = new Random();
                 randomRedX = minX + r.nextFloat() * (maxX - minX);
                 r = new Random();
@@ -152,7 +152,7 @@ class CvDefPoly extends Canvas {
         Point2D a = (Point2D) (v.elementAt(0));
         // Show tiny rectangle around first vertex:
         g.setColor(Color.red);
-        g.drawRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+        g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
         for (int i = 1; i <= n; i++) {
             if (i == n && !ready) {
                 break;
@@ -181,7 +181,7 @@ class CvDefPoly extends Canvas {
             Point2D b = (Point2D) (vBlue.elementAt(i % n));
             //g.setColor(Color.red);
             //g.drawLine(iX(a.x), iY(a.y), iX(b.x), iY(b.y));
-            g.fillRect(iX(b.x) - 2, iY(b.y) - 2, 4, 4); // Tiny rectangle; added
+            g.drawRect(iX(b.x) - 2, iY(b.y) - 2, 4, 4); // Tiny rectangle; added
             //a = b;
             //g.drawString("" + (i % n), iX(b.x), iY(b.y));// to test.......
         }
