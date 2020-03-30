@@ -4,11 +4,15 @@ para manejar subdivisiones del plano
  */
 package javagraphics;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  *
  * @author Rodrigo
  */
 public class DCEL {
+    public static final String ANSI_GREEN = "\u001B[32m";
 
     public static void main(String[] args) {
         System.out.println("hola");
@@ -87,11 +91,10 @@ public class DCEL {
 //            System.out.println(iterador.origin.x + " " + iterador.origin.y);
 //            iterador = iterador.next;
 //        }
-        dcel.listarAristas(e23);
-
+        //dcel.listarAristas(e23);
         //-----prueba para interseccion de aristas
         Vertex v10 = new Vertex(-5, 5, null);
-        Vertex v20 = new Vertex(7, -4, null);
+        Vertex v20 = new Vertex(6, -8, null);
         HalfEdge e1020 = new HalfEdge(null, null, null, null);
         HalfEdge e2010 = new HalfEdge(null, null, null, null);
         e1020.origin = v10;
@@ -119,9 +122,80 @@ public class DCEL {
         e4030.twin = e3040;
 
         dcel.intersectarAristas(e1020, e3040);
-        
-        //ahora vamos a crear la bounding box de ejemplo
-        
+
+        //ahora vamos a crear la bounding box de ejemplo-----------
+        ArrayList<Vertex> vBounding = new ArrayList<Vertex>();
+        vBounding.add(new Vertex(4, 4, null)); //0
+        vBounding.add(new Vertex(4, -4, null)); //1
+        vBounding.add(new Vertex(-4, -4, null)); //2
+        vBounding.add(new Vertex(-4, 4, null)); //3
+        ArrayList<HalfEdge> eBounding = new ArrayList<HalfEdge>();
+        Iterator itr = vBounding.iterator();
+        while (itr.hasNext()) {
+            Vertex next = (Vertex) itr.next();
+            System.out.println(next.x + " " + next.y);
+        }
+        HalfEdge eb12 = new HalfEdge(null, null, null, null);
+        HalfEdge eb21 = new HalfEdge(null, null, null, null);
+        HalfEdge eb23 = new HalfEdge(null, null, null, null);
+        HalfEdge eb32 = new HalfEdge(null, null, null, null);
+        HalfEdge eb34 = new HalfEdge(null, null, null, null);
+        HalfEdge eb43 = new HalfEdge(null, null, null, null);
+        HalfEdge eb41 = new HalfEdge(null, null, null, null);
+        HalfEdge eb14 = new HalfEdge(null, null, null, null);
+
+        Face bf1 = new Face(eb21, null);
+        Face bfu = new Face(null, eb12);
+
+        eb12.origin = vBounding.get(0);
+        eb12.prev = eb41;
+        eb12.next = eb23;
+        eb12.twin = eb21;
+
+        eb21.origin = vBounding.get(1);
+        eb21.prev = eb32;
+        eb21.next = eb14;
+        eb21.twin = eb12;
+
+        eb23.origin = vBounding.get(1);
+        eb23.prev = eb12;
+        eb23.next = eb34;
+        eb23.twin = eb32;
+
+        eb32.origin = vBounding.get(2);
+        eb32.prev = eb43;
+        eb32.next = eb21;
+        eb32.twin = eb23;
+
+        eb34.origin = vBounding.get(2);
+        eb34.prev = eb23;
+        eb34.next = eb41;
+        eb34.twin = eb43;
+
+        eb43.origin = vBounding.get(3);
+        eb43.prev = eb14;
+        eb43.next = eb32;
+        eb43.twin = eb34;
+
+        eb41.origin = vBounding.get(3);
+        eb41.prev = eb34;
+        eb41.next = eb12;
+        eb41.twin = eb14;
+
+        eb14.origin = vBounding.get(0);
+        eb14.prev = eb21;
+        eb14.next = eb43;
+        eb14.twin = eb41;
+
+        System.out.println("cara interna bBox");
+        HalfEdge iterador = eb21;
+        while (!iterador.next.equals(eb21)) {
+            dcel.intersectarAristas(iterador, e1020);
+            System.out.println(iterador.origin.x + " " + iterador.origin.y);
+            iterador = iterador.next;
+        }
+        dcel.intersectarAristas(iterador, e1020);
+
     }
 
     public void listarAristas(HalfEdge buscarAristas) {
@@ -138,23 +212,45 @@ public class DCEL {
     public void intersectarAristas(HalfEdge e1, HalfEdge e2) {
         //primero pasamos a forma y = ax +b
         //para eso primero encontramos la pendiente
-        float m1 = (e1.origin.y - e1.twin.origin.y) / (e1.origin.x - e1.twin.origin.x);
-        float m2 = (e2.origin.y - e2.twin.origin.y) / (e2.origin.x - e2.twin.origin.x);
+        System.out.println(e1.toString());
+        System.out.println(e2.toString());
+        float m1 = (e1.origin.y - e1.twin.origin.y) / (e1.origin.x - e1.twin.origin.x); //(y1-y2) / (x1-x2)
+        float m2 = (e2.origin.y - e2.twin.origin.y) / (e2.origin.x - e2.twin.origin.x); //(y1-y2) / (x1-x2)
         System.out.println("m1 " + m1);
+        System.out.println("m2 " + m2);
         //y - y1 = m(x-x1) => y mx - mx1 + y1
-        float b1 = (-m1 * (e1.origin.x)) + e1.origin.y;
-        float b2 = (-m2 * (e2.origin.x)) + e2.origin.y;
-
+        float b1 = (-m1 * (e1.origin.x)) + e1.origin.y; //b1 de la forma y = xm1 + b1
+        float b2 = (-m2 * (e2.origin.x)) + e2.origin.y; //b2 de la forma Y = xm2 + b2
+        System.out.println("b1 " + b1);
+        System.out.println("b2 " + b2);
         float x = (b2 - b1) / (m1 - m2);
-        float y1 = (m1 * x) + b1;
-        System.out.println("x" + x);
-        System.out.println("interseccion en " + x + " " + y1);
-        if(Math.min(e1.origin.x, e1.twin.origin.x) < x && x < Math.max(e1.origin.x, e1.twin.origin.x)
-                && Math.min(e2.origin.x, e2.twin.origin.x) < x && x < Math.max(e2.origin.x, e2.twin.origin.x) ){
-            System.out.println("los segmentos se intersecan");
-        }else{
+        if (Double.isInfinite(m1)) {    //si esto pasa es vertical la linea
+            x = e1.origin.x;
+        }
+        float y2 = (m2 * x) + b2;
+        System.out.println("x " + x);
+        System.out.println("y1 " + y2);
+        System.out.println("interseccion en " + x + " " + y2);
+        if (Math.min(e1.origin.x, e1.twin.origin.x) <= x && x <= Math.max(e1.origin.x, e1.twin.origin.x)
+                && Math.min(e2.origin.x, e2.twin.origin.x) <= x && x <= Math.max(e2.origin.x, e2.twin.origin.x)) {
+            if (e1.origin.x == e1.twin.origin.x) {
+                System.out.println("necesita verificacion en y");
+                if (Math.min(e1.origin.y, e1.twin.origin.y) <= y2 && y2 <= Math.max(e1.origin.y, e1.twin.origin.y)
+                        && Math.min(e2.origin.y, e2.twin.origin.y) <= y2 && y2 <= Math.max(e2.origin.y, e2.twin.origin.y)) {
+                    System.out.println(ANSI_GREEN+"caso vertical - se intersecan"+ANSI_GREEN);
+                    return;
+                }else{
+                    System.out.println("caso vertical - no se intersecan");
+                    return;
+                }
+                
+            }
+            System.out.println(ANSI_GREEN+"los segmentos se intersecan"+ANSI_GREEN);
+        } else {
             System.out.println("no se intersecan");
         }
+        System.out.println("");
+        System.out.println("");
     }
 }
 
