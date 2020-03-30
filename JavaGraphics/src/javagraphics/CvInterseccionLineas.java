@@ -11,7 +11,7 @@ class CvInterseccionLineas extends Canvas {
     float x0, y0, rWidth = 20F, rHeight = 20.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
     int centerX, centerY;
-    int numerodePuntos = 10;
+    int numerodePuntos = 3;
     float separacionMinima = .5f;
 
     CvInterseccionLineas() {
@@ -72,7 +72,7 @@ class CvInterseccionLineas extends Canvas {
                 bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
         g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
         v = new Vector<Point2D>();
-        v = this.generarPuntosAleatorios();
+        //v = this.generarPuntosAleatorios(); //llena el vector de puntos aleatorios
         v.add(new Point2D(1F, 0));
         v.add(new Point2D(2, -1));
 //        //System.out.println(v.elementAt(0).x);
