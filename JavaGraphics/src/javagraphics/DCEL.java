@@ -22,16 +22,16 @@ public class DCEL {
         Vertex v2 = new Vertex(2, 2, null);
         Vertex v3 = new Vertex(2, 0, null);
         Vertex v4 = new Vertex(3, 1, null);
-        HalfEdge e13 = new HalfEdge(null, null, null, null);
-        HalfEdge e31 = new HalfEdge(null, null, null, null);
-        HalfEdge e21 = new HalfEdge(null, null, null, null);
-        HalfEdge e12 = new HalfEdge(null, null, null, null);
-        HalfEdge e34 = new HalfEdge(null, null, null, null);
-        HalfEdge e43 = new HalfEdge(null, null, null, null);
-        HalfEdge e42 = new HalfEdge(null, null, null, null);
-        HalfEdge e24 = new HalfEdge(null, null, null, null);
-        HalfEdge e32 = new HalfEdge(null, null, null, null);
-        HalfEdge e23 = new HalfEdge(null, null, null, null);
+        HalfEdge e13 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e31 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e21 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e12 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e34 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e43 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e42 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e24 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e32 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e23 = new HalfEdge(null, null, null, null, null);
 
         Face f1 = new Face(e13, null);
         Face f2 = new Face(e34, null);
@@ -96,8 +96,8 @@ public class DCEL {
         //-----prueba para interseccion de aristas
         Vertex v10 = new Vertex(-5, 5, null);
         Vertex v20 = new Vertex(7, -4, null);
-        HalfEdge e1020 = new HalfEdge(null, null, null, null);
-        HalfEdge e2010 = new HalfEdge(null, null, null, null);
+        HalfEdge e1020 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e2010 = new HalfEdge(null, null, null, null, null);
         e1020.origin = v10;
         e1020.next = e2010;
         e1020.prev = e2010;
@@ -110,8 +110,8 @@ public class DCEL {
 
         Vertex v30 = new Vertex(-8, -3, null);
         Vertex v40 = new Vertex(6, 1, null);
-        HalfEdge e3040 = new HalfEdge(null, null, null, null);
-        HalfEdge e4030 = new HalfEdge(null, null, null, null);
+        HalfEdge e3040 = new HalfEdge(null, null, null, null, null);
+        HalfEdge e4030 = new HalfEdge(null, null, null, null, null);
         e3040.origin = v30;
         e3040.next = e4030;
         e3040.prev = e4030;
@@ -136,14 +136,14 @@ public class DCEL {
             Vertex next = (Vertex) itr.next();
             System.out.println(next.x + " " + next.y);
         }
-        HalfEdge eb12 = new HalfEdge(null, null, null, null);
-        HalfEdge eb21 = new HalfEdge(null, null, null, null);
-        HalfEdge eb23 = new HalfEdge(null, null, null, null);
-        HalfEdge eb32 = new HalfEdge(null, null, null, null);
-        HalfEdge eb34 = new HalfEdge(null, null, null, null);
-        HalfEdge eb43 = new HalfEdge(null, null, null, null);
-        HalfEdge eb41 = new HalfEdge(null, null, null, null);
-        HalfEdge eb14 = new HalfEdge(null, null, null, null);
+        HalfEdge eb12 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb21 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb23 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb32 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb34 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb43 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb41 = new HalfEdge(null, null, null, null, null);
+        HalfEdge eb14 = new HalfEdge(null, null, null, null, null);
 
         Face bf1 = new Face(eb21, null);
         Face bfu = new Face(null, eb12);
@@ -200,15 +200,16 @@ public class DCEL {
         // INICIA buscar la interseccion con la bounding box----------
         System.out.println("cara interna bBox");
         Vertex interIzquierda = new Vertex(5, 0, null);
-        HalfEdge aristaInterIzq = new HalfEdge(null, null, null, null);
+        HalfEdge aristaInterIzq = new HalfEdge(null, null, null, null, null);
         HalfEdge iterador = eb21;
         while (!iterador.next.equals(eb21)) {
             if (dcel.intersectarAristas(iterador, e1020) != null) {
-                //INICIA compara el más derecho
+                //INICIA compara el más izquierdo
                 if (dcel.intersectarAristas(iterador, e1020).x < interIzquierda.x) {
                     interIzquierda = dcel.intersectarAristas(iterador, e1020);
                     aristaInterIzq = iterador;
                 }
+                //TERMINA comparar mas izquierdo
             }
             System.out.println(iterador.origin.x + " " + iterador.origin.y);
             iterador = iterador.next;
@@ -216,25 +217,131 @@ public class DCEL {
         System.out.println(iterador.origin.x + " " + iterador.origin.y);
         //dcel.intersectarAristas(iterador, e1020);
         if (dcel.intersectarAristas(iterador, e1020) != null) {
-            //INICIA compara el más derecho
+            //INICIA compara el más izquierdo
             if (dcel.intersectarAristas(iterador, e1020).x < interIzquierda.x) {
                 interIzquierda = dcel.intersectarAristas(iterador, e1020);
                 aristaInterIzq = iterador;
             }
+            //TERMINA comparar mas izquierdo
         }
 
         System.out.println("el mas izquierdo es " + interIzquierda.x);
         System.out.println("con " + aristaInterIzq.toString());
         //TERMINA buscar la interseccion con la bounding box--------
+        //INICIA partir la arista inicial de bBox-----
+        Vertex c = new Vertex(interIzquierda.x, interIzquierda.y, null);
+        HalfEdge ac = new HalfEdge(null, null, null, null, null);
+        HalfEdge ca = new HalfEdge(null, null, null, null, null);
+        HalfEdge bc = new HalfEdge(null, null, null, null, null);
+        HalfEdge cb = new HalfEdge(null, null, null, null, null);
+
+        ac.origin = vBounding.get(0);
+        ac.prev = eb41;
+        ac.next = cb;
+        ac.twin = ca;
+        ac.face = bfu;
+
+        ca.origin = c;
+        ca.prev = bc;
+        ca.next = eb14;
+        ca.twin = ac;
+        ca.face = bf1;
+
+        bc.origin = vBounding.get(1);
+        bc.prev = eb32;
+        bc.next = ca;
+        bc.twin = cb;
+        bc.face = bf1;
+
+        cb.origin = c;
+        cb.prev = ac;
+        cb.next = eb23;
+        cb.twin = bc;
+        cb.face = bfu;
+
+        eb32.next = bc;
+        eb23.prev = cb;
+
+        eb41.next = ac;
+        eb14.prev = ca;
+        //TERMINA partir la arista inicial de bBox-----
+
         //INICIA partir la cara -----------
         System.out.println("");
         System.out.println("caras de una arista");
         System.out.println("");
-        ArrayList<HalfEdge> cara = dcel.recorerCara(aristaInterIzq);
+        ArrayList<HalfEdge> cara = dcel.recorerCara(ca);
         Iterator iter = cara.iterator();
         while (iter.hasNext()) {
             HalfEdge next = (HalfEdge) iter.next();
-            System.out.println(next.toString());
+            System.out.println(next.face);
+            System.out.println("aritsta a probar ".toUpperCase() + next.toString());
+            if (dcel.intersectarAristas(next, e1020) != null) {
+                //crear vertices 
+                vBounding.add(dcel.intersectarAristas(next, e1020));
+                HalfEdge mitad1CCW = new HalfEdge(null, null, null, null, null);
+                HalfEdge mitad1CW = new HalfEdge(null, null, null, null, null);
+                HalfEdge mitad2CCW = new HalfEdge(null, null, null, null, null);
+                HalfEdge mitad2CW = new HalfEdge(null, null, null, null, null);
+                HalfEdge mc = new HalfEdge(null, null, null, null, null);
+                HalfEdge cm = new HalfEdge(null, null, null, null, null);
+
+                Face f3 = new Face(null, null);
+
+                mitad1CCW.origin = next.origin;
+                mitad1CCW.prev = next.prev;
+                mitad1CCW.next = mc;
+                mitad1CCW.twin = mitad1CW;
+                mitad1CCW.face = next.face;
+
+                System.out.println(next.face);
+                bf1.outer = mitad1CCW;//actualizamos por donde recorrer la cara 
+                mitad1CCW.face.outer = mitad1CCW;//actualizamos por donde recorrer la cara 
+
+                mitad1CW.origin = vBounding.get(vBounding.size() - 1); //el ultimo vertice que agregué
+                mitad1CW.prev = cm;
+                mitad1CW.next = next.twin.next;
+                mitad1CW.twin = mitad1CCW;
+                mitad1CW.face = next.twin.face;
+
+                mitad2CCW.origin = vBounding.get(vBounding.size() - 1); //el ultimo vertice que agregué
+                mitad2CCW.prev = cm;
+                mitad2CCW.next = next.next;
+                mitad2CCW.twin = mitad2CW;
+                mitad2CCW.face = f3;
+
+                f3.outer = mitad2CCW; //decimos por  donde inicia la nueva cara
+
+                mitad2CW.origin = next.twin.origin;
+                mitad2CW.prev = next.next.twin;
+                mitad2CW.next = mc;
+                mitad2CW.twin = mitad2CCW;
+                mitad2CW.face = next.twin.face;
+
+                mc.origin = vBounding.get(vBounding.size() - 1);
+                mc.prev = mitad1CCW;
+                mc.next = ca; // INFORMACION QUE TIENE QUE SER GUARDADA EN CADA ITERACION 
+                mc.twin = cm;
+                mc.face = mitad1CCW.face;
+
+                cm.origin = c;
+                cm.prev = bc;
+                cm.next = mitad2CCW; // INFORMACION QUE TIENE QUE SER GUARDADA EN CADA ITERACION 
+                cm.twin = mc;
+                cm.face = mitad2CCW.face;
+
+                //actualizar lo que hay atras y delante de next
+                next.prev.next = mitad1CCW;
+                next.prev.next.twin = mitad1CW;
+                next.next.prev = mitad2CCW;
+                next.next.prev.twin = mitad2CW;
+
+                bc.next = cm;
+                bc.next.twin = mc;
+                //dcel.recorerCara(mitad1CCW);
+                dcel.recorerCara(mitad2CCW);
+                break;
+            }
         }
         //TERMINA partir la cara ----------
     }
@@ -255,11 +362,11 @@ public class DCEL {
         HalfEdge iterador = edge;
         iterador = iterador.next;
         while (!iterador.equals(edge)) {
-            face.add(new HalfEdge(iterador.origin, iterador.next, iterador.prev, iterador.twin));
-            //System.out.println(iterador.toString());
+            face.add(new HalfEdge(iterador.origin, iterador.next, iterador.prev, iterador.twin, iterador.face));
+            System.out.println(iterador.toString());
             iterador = iterador.next;
         }
-        //System.out.println(iterador.toString());
+        System.out.println(iterador.toString());
         return face;
     }
 
@@ -335,17 +442,19 @@ class HalfEdge {
     HalfEdge prev;
     HalfEdge twin;
 
-    public HalfEdge(Vertex origin, HalfEdge next, HalfEdge prev, HalfEdge twin) {
+    public HalfEdge(Vertex origin, HalfEdge next, HalfEdge prev, HalfEdge twin, Face face) {
         this.origin = origin;
         this.next = next;
         this.prev = prev;
         this.twin = twin;
+        this.face = face;
     }
 
     @Override
     public String toString() {
         return "HalfEdge{" + "origin=" + origin.x + " " + origin.y
-                + ", next=" + next.origin.x + " " + next.origin.y + '}';
+                + ", next=" + twin.origin.x + " " + twin.origin.y + '}';
+        //+ ", next=" + next.origin.x + " " + next.origin.y + '}';
     }
 
 }
