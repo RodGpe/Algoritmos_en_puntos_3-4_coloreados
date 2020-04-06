@@ -13,30 +13,110 @@ class CvArregloLineas extends Canvas {
     int centerX, centerY;
     int numerodePuntos = 3;
     float separacionMinima = .5f;
+    ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+    ArrayList<HalfEdge> edgeList = new ArrayList<HalfEdge>();
+    ArrayList<HalfEdge> pruebas = new ArrayList<HalfEdge>();
+    ArrayList<Face> faceList = new ArrayList<Face>();
 
     CvArregloLineas() {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
-                float xA = fx(evt.getX()), yA = fy(evt.getY());
-                if (ready) {
-                    v.removeAllElements();
-                    x0 = xA;
-                    y0 = yA;
-                    ready = false;
-                }
-                float dx = xA - x0, dy = yA - y0;
-                if (v.size() > 0
-                        && dx * dx + dy * dy < 20 * pixelSize * pixelSize) // Previously 4 instead of 20 .........................
-                {
-                    ready = true;
-                } else {
-                    v.addElement(new Point2D(xA, yA));
-                }
+                DCEList dcel = new DCEList();
+                Vertex v10 = new Vertex(-5, 5, null);
+                Vertex v20 = new Vertex(7, -4, null);
+                HalfEdge linea = new HalfEdge(null, null, null, null, null);
+                HalfEdge e2010 = new HalfEdge(null, null, null, null, null);
+                linea.origin = v10;
+                linea.next = e2010;
+                linea.prev = e2010;
+                linea.twin = e2010;
 
-                // Added December 2016:
-                if (evt.getModifiers() == InputEvent.BUTTON3_MASK) {
-                    ready = true;
+                e2010.origin = v20;
+                e2010.next = linea;
+                e2010.prev = linea;
+                e2010.twin = linea;
+                dcel.crearBoundingBox(4, -4, 4, -4, edgeList, vertexList, faceList);
+                Face unBounded = faceList.get(1);
+                ArrayList<HalfEdge> frontera = dcel.recorrerFrontera(edgeList, unBounded); //indice 1 de cara porque es la no acotada e indice 1 de arista porque es la CCW
+                System.out.println("-----");
+                //dcel.intersectarLineaFronteraPorIzq(frontera, linea);
+                System.out.println("----");
+                ArrayList<Object> resultado = dcel.intersectarLineaFronteraPorIzq(frontera, linea);
+                Vertex interseccion = (Vertex) resultado.get(0);
+                HalfEdge aristaInterseccion = (HalfEdge) resultado.get(1);
+                aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList); //la asigno a la variable para tenerlo actualizado
+                System.out.println("----");
+                //dcel.recorerCara(edgeList.get(edgeList.size() - 1)); //indice 1 porque es CCW
+                System.out.println("-----");
+                ArrayList<Object> resultadoNuevo;//= dcel.buscarSiguienteInterseccion(aristaInterseccion.next, e1020); //como parti la arista anterior entonces su punto next sera parte de la otra cara
+                Vertex interseccionNueva;//= (Vertex) resultadoNuevo.get(0);
+                HalfEdge aristaInterseccionNueva;//= (HalfEdge) resultadoNuevo.get(1);
+                //aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList);//la asigno a la variable para tenerlo actualizado
+                System.out.println("----");
+                //dcel.imprimirLista(edgeList);
+                //dcel.recorerCara(edgeList.get(edgeList.size()-2));
+                System.out.println("----");
+                //dcel.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
+                //dcel.recorerCara(faceList.get(0).outer);
+                //System.out.println(faceList.get(1).inner);
+                System.out.println("----");
+                dcel.recorerCara(faceList.get(1).inner);
+                dcel.imprimirLista(edgeList);
+                System.out.println(unBounded);
+                while (true) {
+                    resultadoNuevo = dcel.buscarSiguienteInterseccion(aristaInterseccion.next, linea);
+                    interseccionNueva = (Vertex) resultadoNuevo.get(0);
+                    aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
+                    aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList);
+                    dcel.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
+                    System.out.println("");
+                    if (aristaInterseccionNueva.twin.face == unBounded) {
+                        break;
+                    }
+                    aristaInterseccion = aristaInterseccionNueva.twin.prev;
                 }
+                //repaint();
+
+                Vertex v30 = new Vertex(-8, -3, null);
+                Vertex v40 = new Vertex(6, 1, null);
+                HalfEdge e3040 = new HalfEdge(null, null, null, null, null);
+                HalfEdge e4030 = new HalfEdge(null, null, null, null, null);
+                e3040.origin = v30;
+                e3040.next = e4030;
+                e3040.prev = e4030;
+                e3040.twin = e4030;
+
+                e4030.origin = v40;
+                e4030.next = e3040;
+                e4030.prev = e3040;
+                e4030.twin = e3040;
+                frontera = dcel.recorrerFrontera(edgeList, unBounded);
+                resultado = dcel.intersectarLineaFronteraPorIzq(frontera, e3040);
+                interseccion = (Vertex) resultado.get(0);
+                aristaInterseccion = (HalfEdge) resultado.get(1);
+                aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList);
+                pruebas=edgeList;
+                int contador = 1;
+                while (true) {
+                    resultadoNuevo = dcel.buscarSiguienteInterseccion(aristaInterseccion.next, e3040);
+                    interseccionNueva = (Vertex) resultadoNuevo.get(0);
+                    aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
+                    aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList);
+                    repaint();
+//                    if (contador==2) {
+//                        break;
+//                    }
+                    dcel.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
+                    if (aristaInterseccionNueva.twin.face == unBounded) {
+                        break;
+                    }
+                    aristaInterseccion = aristaInterseccionNueva.twin.prev;
+                    contador ++;
+                    break;
+                }
+                pruebas = dcel.recorerCara(faceList.get(2).outer);
+                //pruebas = dcel.recorrerFrontera(edgeList, unBounded);
+                //pruebas = edgeList;
                 repaint();
             }
         });
@@ -71,96 +151,11 @@ class CvArregloLineas extends Canvas {
         int left = iX(-rWidth / 2), right = iX(rWidth / 2),
                 bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
         g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-        v = new Vector<Point2D>();
-        //v = this.generarPuntosAleatorios(); //llena el vector de puntos aleatorios
-        v.add(new Point2D(1F, 0));
-        v.add(new Point2D(2, -1));
-        DCEList dcel2 = new DCEList();
-        ArrayList<Vertex> vertexList2 = new ArrayList<Vertex>();
-        ArrayList<HalfEdge> edgeList2 = new ArrayList<HalfEdge>();
-        ArrayList<Face> faceList2 = new ArrayList<Face>();
-        dcel2.crearBoundingBox(4, -4, 4, -4, edgeList2, vertexList2, faceList2);
-        HalfEdge linea2 = dcel2.crearArista(-5, 5, 7, -4);
-        dcel2.agregarLineaArreglo(edgeList2, vertexList2, faceList2, linea2);
-        HalfEdge linea3 = dcel2.crearArista(-8, -3, 6, -1);
-        dcel2.agregarLineaArreglo(edgeList2, vertexList2, faceList2, linea3);
-        g.setColor(Color.red);
-        for (Iterator<HalfEdge> iterator = edgeList2.iterator(); iterator.hasNext();) {
+        for (Iterator<HalfEdge> iterator = pruebas.iterator(); iterator.hasNext();) {
             HalfEdge next = iterator.next();
+            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
             g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
         }
-        g.drawLine(iX(edgeList2.get(0).origin.x), iY(edgeList2.get(0).origin.y), iX(edgeList2.get(0).twin.origin.x), iY(edgeList2.get(0).twin.origin.y));
-        //g.drawLine(iX(4), iY(4), iX(-4), iY(4));
-//        //System.out.println(v.elementAt(0).x);
-//        float y1 = 0.0F;
-//        float y2 = 0.0F;
-//        float x1 = 20, x2 = -20;
-//
-//        //y1 = m*x1-b2
-//        y1 = v.elementAt(0).x * x1 - v.elementAt(0).y;
-//        //y2 = m*x2-b2
-//        y2 = v.elementAt(0).x * x2 - v.elementAt(0).y;
-//        System.out.println(x1 + " " + y1);
-//        System.out.println(x2 + " " + y2);
-//        g.drawLine(iX(x1), iY(y1), iX(x2), iY(y2));
-        this.calcularDual(v.elementAt(0), g);
-        this.calcularDual(v.elementAt(1), g);
-        for (Iterator<Point2D> iterator = v.iterator(); iterator.hasNext();) {
-            Point2D next = iterator.next();
-            this.calcularDual(next, g);
-        }
-
-        //calcular las intersecciones---------------------------
-        Point2D punto = new Point2D(x0, y0);
-        punto = this.calcularInterseccionDual(v.elementAt(0), v.elementAt(1), g);
-        for (int i = 0; i < v.size(); i++) {
-            for (int j = 0; j < v.size(); j++) {
-                punto = this.calcularInterseccionDual(v.elementAt(i), v.elementAt(j), g);
-            }
-
-        }
-        //fin calcular las intersecciones------------------------
-        //this.calcularDual(punto, g);
-        //para dibujar los puntos--------------------------------------
-        int n = v.size();
-        if (n == 0) {
-            return;
-        }
-        Point2D a = (Point2D) (v.elementAt(0));
-        // Show tiny rectangle around first vertex:
-        g.setColor(Color.red);
-        g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-        for (int i = 1; i <= n; i++) {
-            if (i == n && !ready) {
-                break;
-            }
-            Point2D b = (Point2D) (v.elementAt(i % n));
-            //g.setColor(Color.red);
-            //g.drawLine(iX(a.x), iY(a.y), iX(b.x), iY(b.y));
-            g.fillRect(iX(b.x) - 2, iY(b.y) - 2, 4, 4); // Tiny rectangle; added
-            a = b;
-            g.drawString("" + (i % n), iX(b.x), iY(b.y));// to test.......
-        }
-        //termina para dibujar los puntos------------------------------
-//        int n = v.size();
-//        if (n == 0) {
-//            return;
-//        }
-//        Point2D a = (Point2D) (v.elementAt(0));
-//        // Show tiny rectangle around first vertex:
-//        g.setColor(Color.red);
-//        g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-//        for (int i = 1; i <= n; i++) {
-//            if (i == n && !ready) {
-//                break;
-//            }
-//            Point2D b = (Point2D) (v.elementAt(i % n));
-//            g.setColor(Color.red);
-//            g.drawLine(iX(a.x), iY(a.y), iX(b.x), iY(b.y));
-//            g.fillRect(iX(b.x) - 2, iY(b.y) - 2, 4, 4); // Tiny rectangle; added
-//            a = b;
-//            g.drawString("" + (i % n), iX(b.x), iY(b.y));// to test.......
-//        }
     }
 
     public boolean verificarAlineacion(Vector<Point2D> v, Point2D a) {
