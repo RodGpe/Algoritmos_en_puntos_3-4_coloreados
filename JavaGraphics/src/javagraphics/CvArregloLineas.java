@@ -44,7 +44,7 @@ class CvArregloLineas extends Canvas {
                 ArrayList<Object> resultado = dcel.intersectarLineaFronteraPorIzq(frontera, linea);
                 Vertex interseccion = (Vertex) resultado.get(0);
                 HalfEdge aristaInterseccion = (HalfEdge) resultado.get(1);
-                aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList); //la asigno a la variable para tenerlo actualizado
+                aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList,unBounded); //la asigno a la variable para tenerlo actualizado
                 System.out.println("----");
                 //dcel.recorerCara(edgeList.get(edgeList.size() - 1)); //indice 1 porque es CCW
                 System.out.println("-----");
@@ -67,7 +67,7 @@ class CvArregloLineas extends Canvas {
                     resultadoNuevo = dcel.buscarSiguienteInterseccion(aristaInterseccion.next, linea);
                     interseccionNueva = (Vertex) resultadoNuevo.get(0);
                     aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
-                    aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList);
+                    aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList,unBounded);
                     dcel.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
                     System.out.println("");
                     if (aristaInterseccionNueva.twin.face == unBounded) {
@@ -75,7 +75,8 @@ class CvArregloLineas extends Canvas {
                     }
                     aristaInterseccion = aristaInterseccionNueva.twin.prev;
                 }
-                //repaint();
+                pruebas=edgeList;
+                repaint();
 
                 Vertex v30 = new Vertex(-8, -3, null);
                 Vertex v40 = new Vertex(6, 1, null);
@@ -94,29 +95,37 @@ class CvArregloLineas extends Canvas {
                 resultado = dcel.intersectarLineaFronteraPorIzq(frontera, e3040);
                 interseccion = (Vertex) resultado.get(0);
                 aristaInterseccion = (HalfEdge) resultado.get(1);
-                aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList);
-                pruebas=edgeList;
+                aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList,unBounded);
+                pruebas = edgeList;
                 int contador = 1;
                 while (true) {
                     resultadoNuevo = dcel.buscarSiguienteInterseccion(aristaInterseccion.next, e3040);
                     interseccionNueva = (Vertex) resultadoNuevo.get(0);
                     aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
-                    aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList);
-                    repaint();
-//                    if (contador==2) {
+                    aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList, unBounded);
+//                    if (contador == 2) {
 //                        break;
 //                    }
+                    System.out.println("parti arista");
+
                     dcel.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
                     if (aristaInterseccionNueva.twin.face == unBounded) {
                         break;
                     }
+                    //pruebas = dcel.recorerCara(faceList.get(2).outer);
                     aristaInterseccion = aristaInterseccionNueva.twin.prev;
-                    contador ++;
-                    break;
+                    contador++;
+                    //break;
                 }
-                pruebas = dcel.recorerCara(faceList.get(2).outer);
+                //pruebas = dcel.recorerCara(faceList.get(2).outer);
                 //pruebas = dcel.recorrerFrontera(edgeList, unBounded);
                 //pruebas = edgeList;
+                //repaint();
+                HalfEdge nuevaLinea = dcel.crearArista(-5, -3, 5, 2);
+                dcel.agregarLineaArreglo(edgeList, vertexList, faceList, nuevaLinea);
+                HalfEdge nuevaLinea2 = dcel.crearArista(-6, 4, 7, -2);
+                dcel.agregarLineaArreglo(edgeList, vertexList, faceList, nuevaLinea2);
+                System.out.println(unBounded.inner);
                 repaint();
             }
         });
