@@ -223,174 +223,84 @@ public class DCEList {
     }
 
     public void crearBoundingBox(float extDer, float extIzq, float extSup, float extInf, ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, ArrayList<Face> faceList) {
-        ArrayList<Vertex> vBounding = new ArrayList<Vertex>();
-        vBounding.add(new Vertex(-4, 4, null)); //0
+
         vertexList.add(new Vertex(extIzq, extSup, null));
 
-        vBounding.add(new Vertex(4, 4, null)); //1
         vertexList.add(new Vertex(extDer, extSup, null));
 
-        vBounding.add(new Vertex(4, -4, null)); //2
         vertexList.add(new Vertex(extDer, extInf, null));
 
-        vBounding.add(new Vertex(-4, -4, null)); //3
         vertexList.add(new Vertex(extIzq, extInf, null)); //3
 
-        HalfEdge eb12 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//0 indice arista SENTIDO HORARIO (CW)
 
-        HalfEdge eb21 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//1  SENTIDO ANTIHORARIO (CCW)
 
-        HalfEdge eb23 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//2
 
-        HalfEdge eb32 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//3
 
-        HalfEdge eb34 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//4
 
-        HalfEdge eb43 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//5
 
-        HalfEdge eb41 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//6
 
-        HalfEdge eb14 = new HalfEdge(null, null, null, null, null);
         edgeList.add(new HalfEdge(null, null, null, null, null));//7
 
-        Face bf1 = new Face(eb21, null);
         faceList.add(new Face(edgeList.get(1), null)); //  0  indice cara
 
-        Face bfu = new Face(null, eb12);
         faceList.add(new Face(null, edgeList.get(0))); // 1  CARA NO ACOTADA
         Face unBounded = faceList.get(1);
 
-        edgeList.get(0).origin = vBounding.get(0);
+        edgeList.get(0).origin = vertexList.get(0);
         edgeList.get(0).prev = edgeList.get(6);
         edgeList.get(0).next = edgeList.get(2);
         edgeList.get(0).twin = edgeList.get(1);
         edgeList.get(0).face = faceList.get(1);
 
-        edgeList.get(1).origin = vBounding.get(1);
+        edgeList.get(1).origin = vertexList.get(1);
         edgeList.get(1).prev = edgeList.get(3);
         edgeList.get(1).next = edgeList.get(7);
         edgeList.get(1).twin = edgeList.get(0);
         edgeList.get(1).face = faceList.get(0);
 
-        edgeList.get(2).origin = vBounding.get(1);
+        edgeList.get(2).origin = vertexList.get(1);
         edgeList.get(2).prev = edgeList.get(0);
         edgeList.get(2).next = edgeList.get(4);
         edgeList.get(2).twin = edgeList.get(3);
         edgeList.get(2).face = faceList.get(1);
 
-        edgeList.get(3).origin = vBounding.get(2);
+        edgeList.get(3).origin = vertexList.get(2);
         edgeList.get(3).prev = edgeList.get(5);
         edgeList.get(3).next = edgeList.get(1);
         edgeList.get(3).twin = edgeList.get(2);
         edgeList.get(3).face = faceList.get(0);
 
-        edgeList.get(4).origin = vBounding.get(2);
+        edgeList.get(4).origin = vertexList.get(2);
         edgeList.get(4).prev = edgeList.get(2);
         edgeList.get(4).next = edgeList.get(6);
         edgeList.get(4).twin = edgeList.get(5);
         edgeList.get(4).face = faceList.get(1);
 
-        edgeList.get(5).origin = vBounding.get(3);
+        edgeList.get(5).origin = vertexList.get(3);
         edgeList.get(5).prev = edgeList.get(7);
         edgeList.get(5).next = edgeList.get(3);
         edgeList.get(5).twin = edgeList.get(4);
         edgeList.get(5).face = faceList.get(0);
 
-        edgeList.get(6).origin = vBounding.get(3);
+        edgeList.get(6).origin = vertexList.get(3);
         edgeList.get(6).prev = edgeList.get(4);
         edgeList.get(6).next = edgeList.get(0);
         edgeList.get(6).twin = edgeList.get(7);
         edgeList.get(6).face = faceList.get(1);
 
-        edgeList.get(7).origin = vBounding.get(0);
+        edgeList.get(7).origin = vertexList.get(0);
         edgeList.get(7).prev = edgeList.get(1);
         edgeList.get(7).next = edgeList.get(5);
         edgeList.get(7).twin = edgeList.get(6);
         edgeList.get(7).face = faceList.get(0);
 
-    }
-
-    public HalfEdge partirArista(Vertex interseccion, HalfEdge aristaIntersecada, ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, Face unbounded) {
-        //INICIA partir la arista inicial de bBox-----
-        Vertex c = new Vertex(interseccion.x, interseccion.y, null);
-        HalfEdge ac = new HalfEdge(null, null, null, null, null);
-        HalfEdge ca = new HalfEdge(null, null, null, null, null);
-        vertexList.add(c);
-        edgeList.add(ac); //CW
-        edgeList.add(ca); //CCW
-        System.out.println("arista intersecada " + aristaIntersecada);
-        System.out.println("arista intersecada twin " + aristaIntersecada.twin);
-        System.out.println("arista intersecada twin " + aristaIntersecada.twin.next);
-        System.out.println("bbbbbb");
-        if(!aristaIntersecada.twin.face.equals(unbounded)){
-                    ArrayList<HalfEdge> actulizarRecorriendoCara = this.recorerCara(aristaIntersecada.twin);
-        HalfEdge prevAC = actulizarRecorriendoCara.get(actulizarRecorriendoCara.size() - 1);
-        actulizarRecorriendoCara.get(actulizarRecorriendoCara.size() - 1).next = ac;
-        System.out.println(actulizarRecorriendoCara.get(actulizarRecorriendoCara.size() - 1));
-        }
-        System.out.println("aaaaaaaa");
-//        actulizarRecorriendoCara = this.recorerCara(aristaIntersecada.twin);
-
-        //aristaIntersecada = aristaIntersecada.prev.next;// SUPER IMPORTANTE HACERSE "AUTO-REFERENCIA"
-        //porque arista intersecada fue creada como un nuevo objeto en otro metodo
-        //entoces para que sea la misma nos referimo primedio a su prev y luego a su next
-        //para que entonces sí sea el objeto  arista original
-        ac.origin = aristaIntersecada.twin.origin;
-        ac.prev = aristaIntersecada.next.twin;
-        //ac.prev = prevAC;
-        ac.next = aristaIntersecada.twin;
-        ac.twin = ca;
-        ac.face = aristaIntersecada.twin.face;
-
-        ca.origin = c;
-        ca.prev = aristaIntersecada;
-        ca.next = aristaIntersecada.next;
-        ca.twin = ac;
-        ca.face = aristaIntersecada.face;
-
-        // es muy importante que acualizemos primero lo que hay en la segunda mitad de la arista
-        //porque aun hace referencia los next del otro lado
-        aristaIntersecada.next.twin.next = ac;
-        aristaIntersecada.next.prev = ca;
-
-        aristaIntersecada.origin = aristaIntersecada.origin;
-        aristaIntersecada.prev = aristaIntersecada.prev;
-        aristaIntersecada.next = ca;
-        aristaIntersecada.twin = aristaIntersecada.twin;
-        aristaIntersecada.face = aristaIntersecada.face;
-
-        aristaIntersecada.twin.origin = c;
-        aristaIntersecada.twin.prev = ac;
-        aristaIntersecada.twin.next = aristaIntersecada.twin.next;
-        aristaIntersecada.twin.twin = aristaIntersecada;
-        aristaIntersecada.twin.face = aristaIntersecada.twin.face;
-
-        //es importante que estas referencias sean actualizadas despues de actualizar la arista AUN TENGO DUDAS DE ESTO
-        //aristaIntersecada.prev.next = aristaIntersecada;
-        //aristaIntersecada.twin.next.prev = aristaIntersecada.twin;
-//        vertexList.add(c);
-//        edgeList.add(ac); //CW
-//        edgeList.add(ca); //CCW
-//        edgeList.add(bc);
-//        edgeList.add(cb);
-        //falta actulizar el ultimo que apunta a la segunda mitad partida
-        System.out.println(ac.next);
-        System.out.println(ac.next);
-        System.out.println(ac.next);
-        System.out.println(ac);
-        System.out.println(ac.next + "!!!!!!!!!");
-        System.out.println(ac.next.next + "!!!!!!!!!");
-        System.out.println(ac.next.next.next + "!!!!!!!!!");
-        System.out.println(ac.next.next.next.next + "!!!!!!!!!");
-        //TERMINA partir la arista inicial de bBox-----
-        return aristaIntersecada;
     }
 
     /**
@@ -400,26 +310,17 @@ public class DCEList {
      * @return Lista de aristas en la frontera
      */
     public ArrayList<HalfEdge> recorrerFrontera(ArrayList<HalfEdge> arreglo, Face unbounded) {
+        System.out.println("voy a recorrer frontera");
         ArrayList<HalfEdge> faces = new ArrayList<HalfEdge>();
-        HalfEdge edge = unbounded.inner.twin;
+        HalfEdge edge = unbounded.inner;
         HalfEdge iterador = edge;
-        if (iterador.twin.face.equals(unbounded)) {
-            faces.add(iterador);
-        } else {
-            System.exit(1);
-        }
+        faces.add(iterador);
         iterador = iterador.next;
         while (!iterador.equals(edge)) {
-            if (iterador.twin.face.equals(unbounded)) { //si su atista twin tiene a la no acotada a su izquierda entoces todo bien
-                //faces.add(new HalfEdge(iterador.origin, iterador.next, iterador.prev, iterador.twin, iterador.face));
-                faces.add(iterador);
-                //System.out.println(iterador.toString());
-            } else { //si no tiene a la acotada se regresa por su twin una arista que si tiene la unbounded
-                iterador = iterador.twin;
-            }
+            faces.add(iterador);
             iterador = iterador.next;
         }
-        //System.out.println(iterador.toString());
+        System.out.println("acabe recorrer frontera");
         return faces;
     }
 
@@ -480,7 +381,6 @@ public class DCEList {
             //face.add(new HalfEdge(iterador.origin, iterador.next, iterador.prev, iterador.twin, iterador.face));
             face.add(iterador);
             //System.out.println(iterador.toString());
-            System.out.println("se agrego " + iterador + " su next es " + iterador.next);
             iterador = iterador.next;
         }
         //System.out.println(iterador.toString());
@@ -573,6 +473,66 @@ public class DCEList {
         return null;
     }
 
+    public HalfEdge partirArista(Vertex interseccion, HalfEdge aristaIntersecada, ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, Face unbounded) {
+        //INICIA partir la arista inicial de bBox-----
+        Vertex c = new Vertex(interseccion.x, interseccion.y, null);
+        HalfEdge ac = new HalfEdge(null, null, null, null, null);
+        HalfEdge ca = new HalfEdge(null, null, null, null, null);
+        vertexList.add(c);
+        edgeList.add(ac); //CW
+        edgeList.add(ca); //CCW
+
+        if (aristaIntersecada.face.equals(unbounded)) {
+            aristaIntersecada= aristaIntersecada.twin;
+        }
+        //aristaIntersecada = aristaIntersecada.prev.next;// SUPER IMPORTANTE HACERSE "AUTO-REFERENCIA"
+        //porque arista intersecada fue creada como un nuevo objeto en otro metodo
+        //entoces para que sea la misma nos referimo primedio a su prev y luego a su next
+        //para que entonces sí sea el objeto  arista original
+        
+        ac.origin = aristaIntersecada.twin.origin;
+        ac.prev = aristaIntersecada.twin.prev;
+        //ac.prev = prevAC;
+        ac.next = aristaIntersecada.twin;
+        ac.twin = ca;
+        ac.face = aristaIntersecada.twin.face;
+
+        ca.origin = c;
+        ca.prev = aristaIntersecada;
+        ca.next = aristaIntersecada.next;
+        ca.twin = ac;
+        ca.face = aristaIntersecada.face;
+
+        // es muy importante que acualizemos primero lo que hay en la segunda mitad de la arista
+        //porque aun hace referencia los next del otro lado
+        aristaIntersecada.twin.prev.next=ac;
+        aristaIntersecada.next.prev= ca;
+
+        aristaIntersecada.origin = aristaIntersecada.origin;
+        aristaIntersecada.prev = aristaIntersecada.prev;
+        aristaIntersecada.next = ca;
+        aristaIntersecada.twin = aristaIntersecada.twin;
+        aristaIntersecada.face = aristaIntersecada.face;
+
+        aristaIntersecada.twin.origin = c;
+        aristaIntersecada.twin.prev = ac;
+        aristaIntersecada.twin.next = aristaIntersecada.twin.next;
+        aristaIntersecada.twin.twin = aristaIntersecada;
+        aristaIntersecada.twin.face = aristaIntersecada.twin.face;
+
+        //es importante que estas referencias sean actualizadas despues de actualizar la arista AUN TENGO DUDAS DE ESTO
+        //aristaIntersecada.prev.next = aristaIntersecada;
+        //aristaIntersecada.twin.next.prev = aristaIntersecada.twin;
+//        vertexList.add(c);
+//        edgeList.add(ac); //CW
+//        edgeList.add(ca); //CCW
+//        edgeList.add(bc);
+//        edgeList.add(cb);
+        //falta actulizar el ultimo que apunta a la segunda mitad partida
+        //TERMINA partir la arista inicial de bBox-----
+        return aristaIntersecada;
+    }
+
     public void partirCara(HalfEdge primeraInterseccion, HalfEdge segundaInterseccion, ArrayList<HalfEdge> edgeList, ArrayList<Face> faceList) {
         //primeraInterseccion = primeraInterseccion.prev.next; //para apuntar al objeto original
         //segundaInterseccion = segundaInterseccion.prev.next; //para apuntar al objeto original
@@ -594,7 +554,8 @@ public class DCEList {
         corteInv.twin = corte;
         corteInv.face = segundaInterseccion.face;
 
-        primeraInterseccion.next.prev = corte;
+//        primeraInterseccion.next.prev = corte;
+        primeraInterseccion.next.prev = corteInv;
         primeraInterseccion.next = corte;
 
         segundaInterseccion.next.prev = corte;
@@ -640,16 +601,16 @@ public class DCEList {
 
     public void agregarLineaArreglo(ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, ArrayList<Face> faceList, HalfEdge linea) {
         Face unBounded = faceList.get(1);
-        System.out.println("buscando frontera " + unBounded.inner );
+        System.out.println("buscando frontera " + unBounded.inner);
         ArrayList<HalfEdge> frontera = this.recorrerFrontera(edgeList, unBounded); //indice 1 de cara porque es la no acotada e indice 1 de arista porque es la CCW
         //ArrayList<HalfEdge> frontera = this.recorerCara(unBounded.inner); //indice 1 de cara porque es la no acotada e indice 1 de arista porque es la CCW
-        this.imprimirLista(frontera);
+        //this.imprimirLista(frontera);
         //this.intersectarLineaFronteraPorIzq(frontera, linea);
         System.out.println("----");
         ArrayList<Object> resultado = this.intersectarLineaFronteraPorIzq(frontera, linea);
         Vertex interseccion = (Vertex) resultado.get(0);
         HalfEdge aristaInterseccion = (HalfEdge) resultado.get(1);
-        aristaInterseccion = this.partirArista(interseccion, aristaInterseccion, edgeList, vertexList,unBounded); //la asigno a la variable para tenerlo actualizado
+        aristaInterseccion = this.partirArista(interseccion, aristaInterseccion, edgeList, vertexList, unBounded); //la asigno a la variable para tenerlo actualizado
         System.out.println("----");
         //this.recorerCara(edgeList.get(edgeList.size() - 1)); //indice 1 porque es CCW
         System.out.println("-----");
@@ -674,7 +635,7 @@ public class DCEList {
             resultadoNuevo = this.buscarSiguienteInterseccion(aristaInterseccion.next, linea);
             interseccionNueva = (Vertex) resultadoNuevo.get(0);
             aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
-            aristaInterseccionNueva = this.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList,unBounded);
+            aristaInterseccionNueva = this.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList, unBounded);
             this.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
             //System.out.println("asd");
             if (aristaInterseccionNueva.twin.face == unBounded) {
@@ -685,7 +646,7 @@ public class DCEList {
             aristaInterseccion = aristaInterseccionNueva.twin.prev;
         }
         //this.recorerCara(faceList.get(2).outer);
-        this.imprimirLista(edgeList);
+        //this.imprimirLista(edgeList);
         System.out.println("termine de agregar linea------------------------------");
     }
 }
