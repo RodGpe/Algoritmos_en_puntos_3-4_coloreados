@@ -304,10 +304,10 @@ public class DCEList {
     }
 
     /**
-     *
+     * Recorre la cara externa en sentido horario
      * @param arreglo - lista de aristas
      * @param unbounded - cara no acotada
-     * @return Lista de aristas en la frontera
+     * @return Lista de aristas en la frontera en sentido horario 
      */
     public ArrayList<HalfEdge> recorrerFrontera(ArrayList<HalfEdge> arreglo, Face unbounded) {
         System.out.println("voy a recorrer frontera");
@@ -332,7 +332,7 @@ public class DCEList {
      * segundo [1] la arista intersecad
      */
     public ArrayList<Object> intersectarLineaFronteraPorIzq(ArrayList<HalfEdge> frontera, HalfEdge linea) {
-        Vertex interIzquierda = new Vertex(5, 0, null);
+        Vertex interIzquierda = new Vertex(5, 0, null); //tiene que tener un valor en x mayor que todos los puntos del arreglo
         HalfEdge aristaInterIzq = null;// new HalfEdge(null, null, null, null, null);
         Iterator iter = frontera.iterator();
         while (iter.hasNext()) {
@@ -464,6 +464,7 @@ public class DCEList {
             if (this.intersectarAristas(next, linea) != null) {
                 System.out.print("la sig interseccion es en " + this.intersectarAristas(next, linea).x + "  ");
                 System.out.println(this.intersectarAristas(next, linea).y);
+                System.out.println("sig arista intersecada " + next);
                 ArrayList<Object> resultados = new ArrayList<Object>();
                 resultados.add(intersectarAristas(next, linea));
                 resultados.add(next);
@@ -473,6 +474,15 @@ public class DCEList {
         return null;
     }
 
+    /**
+     * 
+     * @param interseccion
+     * @param aristaIntersecada Puede ser la arista o su .twin el resultado no cambia
+     * @param edgeList
+     * @param vertexList
+     * @param unbounded
+     * @return HalfEdge La primer mitad de arista intersecada, i.e., la que mantiene sin cambios el atributo .origin
+     */
     public HalfEdge partirArista(Vertex interseccion, HalfEdge aristaIntersecada, ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, Face unbounded) {
         //INICIA partir la arista inicial de bBox-----
         Vertex c = new Vertex(interseccion.x, interseccion.y, null);
@@ -533,7 +543,15 @@ public class DCEList {
         return aristaIntersecada;
     }
 
-    public void partirCara(HalfEdge primeraInterseccion, HalfEdge segundaInterseccion, ArrayList<HalfEdge> edgeList, ArrayList<Face> faceList) {
+    /**
+     * 
+     * @param primeraInterseccion
+     * @param segundaInterseccion
+     * @param edgeList
+     * @param faceList
+     * @return regresa la half edge que parte la cara (la half edge va de izquierda a derecha)
+     */
+    public HalfEdge partirCara(HalfEdge primeraInterseccion, HalfEdge segundaInterseccion, ArrayList<HalfEdge> edgeList, ArrayList<Face> faceList) {
         //primeraInterseccion = primeraInterseccion.prev.next; //para apuntar al objeto original
         //segundaInterseccion = segundaInterseccion.prev.next; //para apuntar al objeto original
         HalfEdge corte = new HalfEdge(null, null, null, null, null);
@@ -580,6 +598,7 @@ public class DCEList {
             //System.out.println("caraActualizar " + next);
             next.face = corteInv.face;
         }
+        return corte;
     }
 
     public HalfEdge crearArista(float x1, float y1, float x2, float y2) {

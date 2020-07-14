@@ -45,6 +45,7 @@ class CvArregloLineas extends Canvas {
                 Vertex interseccion = (Vertex) resultado.get(0);
                 HalfEdge aristaInterseccion = (HalfEdge) resultado.get(1);
                 aristaInterseccion = dcel.partirArista(interseccion, aristaInterseccion, edgeList, vertexList, unBounded); //la asigno a la variable para tenerlo actualizado
+                System.out.println("revision arista intersecada " + aristaInterseccion);
                 System.out.println("----");
                 //dcel.recorerCara(edgeList.get(edgeList.size() - 1)); //indice 1 porque es CCW
                 System.out.println("-----");
@@ -61,13 +62,14 @@ class CvArregloLineas extends Canvas {
                 //System.out.println(faceList.get(1).inner);
                 System.out.println("----");
                 dcel.recorerCara(faceList.get(1).inner);
-                dcel.imprimirLista(edgeList);
+                //dcel.imprimirLista(edgeList);
                 System.out.println(unBounded);
                 while (true) {
                     resultadoNuevo = dcel.buscarSiguienteInterseccion(aristaInterseccion.next, linea);
                     interseccionNueva = (Vertex) resultadoNuevo.get(0);
                     aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
                     aristaInterseccionNueva = dcel.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList, unBounded);
+                    System.out.println("revision arista intersecada " + aristaInterseccionNueva);
                     dcel.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
                     System.out.println("");
                     if (aristaInterseccionNueva.twin.face == unBounded) {
