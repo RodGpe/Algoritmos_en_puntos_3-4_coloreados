@@ -471,3 +471,12 @@ class Face {
     }
 
 }
+
+class Linea extends HalfEdge{
+    HalfEdge primerArista;
+    public Linea(Vertex origin, HalfEdge next, HalfEdge prev, HalfEdge twin, Face face, HalfEdge primerArista) {
+        super(origin, next, prev, twin, face);
+        this.primerArista= primerArista;
+    }
+
+}

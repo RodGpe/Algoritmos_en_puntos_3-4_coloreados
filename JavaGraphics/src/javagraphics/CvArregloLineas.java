@@ -36,21 +36,27 @@ class CvArregloLineas extends Canvas {
                 e2010.prev = linea;
                 e2010.twin = linea;
                 dcel.crearBoundingBox(4, -4, 4, -4, edgeList, vertexList, faceList);
-             
+
                 //HalfEdge nuevaLinea2 = dcel.crearArista(-6, 4, 7, -2);
                 //dcel.agregarLineaArreglo(edgeList, vertexList, faceList, nuevaLinea2);
                 //HalfEdge nuevaLinea3 = dcel.crearArista(-5, -4, 2, 6);
                 //dcel.agregarLineaArreglo(edgeList, vertexList, faceList, nuevaLinea3);
-                 pruebas = edgeList;
-                repaint();
-                ArrayList<HalfEdge> rectasDuales = transformarPuntosaRectas(generarPuntos());
-                for (Iterator<HalfEdge> iterator = rectasDuales.iterator(); iterator.hasNext();) {
-                    HalfEdge next = iterator.next();
+                //pruebas = edgeList;
+                //repaint();
+                ArrayList<Linea> rectasDuales = transformarPuntosaRectas(generarPuntos());
+
+                for (Linea dual : rectasDuales) {
                     //dcel.crearArista(next.origin.x, next.origin.y, next.twin.origin.x, next.twin.origin.y);
-                    dcel.agregarLineaArreglo(edgeList, vertexList, faceList,dcel.crearArista(next.origin.x, next.origin.y, next.twin.origin.x, next.twin.origin.y));
+                    dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dcel.crearLinea(dual.origin.x, dual.origin.y, dual.twin.origin.x, dual.twin.origin.y));
                 }
-//                System.out.println(unBounded.inner);
-//                repaint();
+                ArrayList<HalfEdge> primeras = new ArrayList<HalfEdge>();
+                for (Linea dual : rectasDuales) {
+                    primeras.add(dual.primerArista);
+                    System.out.println("primer arista = " + dual.primerArista);
+                }
+                pruebas = primeras; //para pintar las primeras aristas de las rectas
+                //pruebas = edgeList; //para pintar todo 
+                repaint();
             }
         });
     }
@@ -84,8 +90,7 @@ class CvArregloLineas extends Canvas {
         int left = iX(-rWidth / 2), right = iX(rWidth / 2),
                 bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
         g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-        for (Iterator<HalfEdge> iterator = pruebas.iterator(); iterator.hasNext();) {
-            HalfEdge next = iterator.next();
+        for (HalfEdge next : pruebas) {
             g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
             g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
         }
@@ -113,7 +118,7 @@ class CvArregloLineas extends Canvas {
         return false;
     }
 
-    public HalfEdge calcularDual(Point2D punto, Graphics g) {
+    public Linea calcularDual(Point2D punto, Graphics g) {
         float y1 = 0.0F;
         float y2 = 0.0F;
         float x1 = 20, x2 = -20;
@@ -126,8 +131,8 @@ class CvArregloLineas extends Canvas {
         System.out.println(x2 + " " + y2);
 //        g.setColor(Color.yellow);
 //        g.drawLine(iX(x1), iY(y1), iX(x2), iY(y2));
-        DCEList dcel = new DCEList ();
-        return dcel.crearArista(x1, y1, x2, y2);
+        DCEList dcel = new DCEList();
+        return dcel.crearLinea(x1, y1, x2, y2);
     }
 
     public Point2D calcularInterseccionDual(Point2D punto1, Point2D punto2, Graphics g) {
@@ -175,8 +180,8 @@ class CvArregloLineas extends Canvas {
         }
         return v;
     }
-    
-    public Vector generarPuntos(){
+
+    public Vector generarPuntos() {
         v = new Vector<Point2D>();
         v.add(new Point2D(1.5f, -3.34f));
         v.add(new Point2D(-0.78f, -1.4f));
@@ -184,14 +189,13 @@ class CvArregloLineas extends Canvas {
         v.add(new Point2D(-0.44f, -1.44f));
         return v;
     }
-    
-    public ArrayList transformarPuntosaRectas(Vector<Point2D> v){
-        ArrayList<HalfEdge> rectasDuales = new ArrayList<HalfEdge>();
-        for (Iterator<Point2D> iterator = v.iterator(); iterator.hasNext();) {
-            Point2D next = iterator.next();
-            DCEList dcel = new DCEList();
-            rectasDuales.add(this.calcularDual(next, null));
-            System.out.println("" + next.x);
+
+    public ArrayList transformarPuntosaRectas(Vector<Point2D> v) {
+        ArrayList<Linea> rectasDuales = new ArrayList<Linea>();
+        for (Point2D punto : v) {
+            //DCEList dcel = new DCEList();
+            rectasDuales.add(this.calcularDual(punto, null));
+            System.out.println("" + punto.x);
         }
         return rectasDuales;
     }
