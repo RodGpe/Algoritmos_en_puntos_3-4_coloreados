@@ -18,5 +18,6 @@ package javagraphics;
 
 class Point2D {
    float x, y;
+   Linea linea;
    Point2D(float x, float y) {this.x = x; this.y = y;}
 }

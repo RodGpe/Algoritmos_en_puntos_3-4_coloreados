@@ -173,7 +173,7 @@ public class DCEList {
     /**
      *
      * @param edge
-     * @return Una lista con las aristas de la cara menos edge
+     * @return Una lista con las aristas de la cara menos edge. Se revorre en CCW
      */
     public ArrayList<HalfEdge> recorerCara(HalfEdge edge) {
         ArrayList<HalfEdge> face = new ArrayList<HalfEdge>();
@@ -245,6 +245,7 @@ public class DCEList {
         System.out.println("\t prev" + edge.prev);
         System.out.println("\t twin" + edge.twin);
         System.out.println("\t face" + edge.face);
+        System.out.println("\t line" + edge.line);
         System.out.println("}");
     }
 
@@ -445,8 +446,15 @@ public class DCEList {
             aristaInterseccionNueva = (HalfEdge) resultadoNuevo.get(1);
             aristaInterseccionNueva = this.partirArista(interseccionNueva, aristaInterseccionNueva, edgeList, vertexList, unBounded);
             this.partirCara(aristaInterseccion, aristaInterseccionNueva, edgeList, faceList);
-            if (guardarPrimer) {
-                linea.primerArista = aristaInterseccion.next;
+            aristaInterseccion.next.line = linea.puntoPrimal.linea;          //codigo para
+            aristaInterseccion.next.twin.line = linea.puntoPrimal.linea;     //asignar la linea a la arista 
+            //....................para actualizar las aristas que fueron partidas
+            aristaInterseccion.next.twin.next.line = aristaInterseccion.line;
+            aristaInterseccionNueva.next.twin.next.line = aristaInterseccionNueva.line;
+            //....................
+            System.out.println(linea.puntoPrimal);
+            if (guardarPrimer) {        //para guardar el primer segmento de la linea
+                linea.primerArista = aristaInterseccion.next;   //en este momento aristaIterseccion.next es la arista de corte
                 guardarPrimer = false;
                 primer = aristaInterseccion.next;
             }
@@ -458,5 +466,26 @@ public class DCEList {
         System.out.println("termine de agregar linea------------------------------");
         System.out.println("primer arista de la linea es " + linea.primerArista + "-------------");
         return primer;
+    }
+    
+    public HalfEdge nextEdge(HalfEdge edge){
+        return edge.next.twin.next;
+    }
+     
+    /**
+     * Recibe la primer arista (interseca bounding box por la izquierda) y devuelve uns lista de las aristas que conforman la linea
+     * @param primera primer arista (por la izquierda)
+     * @param unbounded es la cara no acotada
+     * @return 
+     */
+    public ArrayList<HalfEdge> recorrerLinea(HalfEdge primera, Face unbounded) {
+        ArrayList<HalfEdge> segmentos = new ArrayList<HalfEdge>();
+        HalfEdge iterador = primera;
+        while (iterador.next.twin.face != unbounded){
+            segmentos.add(iterador);
+            iterador = nextEdge(iterador);
+        }
+        segmentos.add(iterador);
+        return segmentos;
     }
 }

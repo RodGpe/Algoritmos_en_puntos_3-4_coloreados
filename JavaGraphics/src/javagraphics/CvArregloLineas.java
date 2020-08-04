@@ -2,7 +2,13 @@ package javagraphics;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 class CvArregloLineas extends Canvas {
 
@@ -13,10 +19,12 @@ class CvArregloLineas extends Canvas {
     int centerX, centerY;
     int numerodePuntos = 3;
     float separacionMinima = .5f;
+    // declaro como variable de clase todo lo que su use para pintar
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
     ArrayList<HalfEdge> edgeList = new ArrayList<HalfEdge>();
     ArrayList<HalfEdge> pruebas = new ArrayList<HalfEdge>();
     ArrayList<Face> faceList = new ArrayList<Face>();
+    ArrayList<Linea> rectasDuales = new ArrayList<>();
 
     CvArregloLineas() {
         addMouseListener(new MouseAdapter() {
@@ -43,19 +51,36 @@ class CvArregloLineas extends Canvas {
                 //dcel.agregarLineaArreglo(edgeList, vertexList, faceList, nuevaLinea3);
                 //pruebas = edgeList;
                 //repaint();
-                ArrayList<Linea> rectasDuales = transformarPuntosaRectas(generarPuntos());
-
+                rectasDuales = transformarPuntosaRectas(generarPuntos());
+                for (Linea dual : rectasDuales) {
+                    System.out.println("puntos primales" + dual.puntoPrimal);
+                }
                 for (Linea dual : rectasDuales) {
                     //dcel.crearArista(next.origin.x, next.origin.y, next.twin.origin.x, next.twin.origin.y);
-                    dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dcel.crearLinea(dual.origin.x, dual.origin.y, dual.twin.origin.x, dual.twin.origin.y));
+                    //dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dcel.crearLinea(dual.origin.x, dual.origin.y, dual.twin.origin.x, dual.twin.origin.y));
+                    dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
+                }
+                for (Linea dual : rectasDuales) {
+                    System.out.println("puntos primales" + dual.puntoPrimal);
                 }
                 ArrayList<HalfEdge> primeras = new ArrayList<HalfEdge>();
                 for (Linea dual : rectasDuales) {
                     primeras.add(dual.primerArista);
                     System.out.println("primer arista = " + dual.primerArista);
                 }
-                pruebas = primeras; //para pintar las primeras aristas de las rectas
+                ArrayList<HalfEdge> segmentosLinea = new ArrayList<>();
+                segmentosLinea = dcel.recorrerLinea(primeras.get(0), faceList.get(1));
+                //pruebas = primeras; //para pintar las primeras aristas de las rectas
                 //pruebas = edgeList; //para pintar todo 
+                ArrayList<HalfEdge> conLinea = new ArrayList<>();
+                for (HalfEdge conLine : edgeList) {
+                    if (conLine.line != null) {
+                        conLinea.add(conLine);
+                    }
+                }
+                dcel.imprimirLista(edgeList);
+                pruebas = segmentosLinea; //para pintar una linea en segmentos 
+                pruebas = conLinea; //para pintar una linea en segmentos 
                 repaint();
             }
         });
@@ -85,14 +110,43 @@ class CvArregloLineas extends Canvas {
         return (centerY - y) * pixelSize;
     }
 
-    public void paint(Graphics g) {
+    public void paint(Graphics g) { 
+        BufferedImage bufferedImage = new BufferedImage(1366, 768, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bufferedImage.createGraphics();    //para dibujar sobre la imagen que se exporta
+
         initgr();
-        int left = iX(-rWidth / 2), right = iX(rWidth / 2),
-                bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
+        int left = iX(-rWidth / 2), right = iX(rWidth / 2);
+        int bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
+
+        //codigo para dibujar rectas
+        for (Linea recta : rectasDuales) {
+            g.drawLine(iX(recta.origin.x), iY(recta.origin.y), iX(recta.twin.origin.x), iY(recta.twin.origin.y));
+        }
+        
+        //codigo para dibujar aristas
         g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
         for (HalfEdge next : pruebas) {
             g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
             g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+        }
+
+        //codigo para dibujar los puntos
+        int i = 0;
+        for (Point2D a : v) {
+            g.setColor(Color.red);
+            g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+            g.drawString("" + (++i), iX(a.x), iY(a.y));
+        }
+        //para exportar imagen
+        g2d.dispose();
+        File file = new File("myimage.png");
+        try {
+            ImageIO.write(bufferedImage, "png", file);
+        } catch (IOException ex) {
+            Logger.getLogger(CvArregloLineas.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -194,8 +248,10 @@ class CvArregloLineas extends Canvas {
         ArrayList<Linea> rectasDuales = new ArrayList<Linea>();
         for (Point2D punto : v) {
             //DCEList dcel = new DCEList();
-            rectasDuales.add(this.calcularDual(punto, null));
-            System.out.println("" + punto.x);
+            Linea auxiliar = this.calcularDual(punto, null);
+            auxiliar.puntoPrimal = punto;   //para que la linea a que punto pertenece
+            punto.linea = auxiliar;         //para que sepa el punto a que linea se mapea
+            rectasDuales.add(auxiliar);
         }
         return rectasDuales;
     }
