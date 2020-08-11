@@ -2,8 +2,9 @@
 Clase de prueba para crear una doubly connected edge list
 para manejar subdivisiones del plano
  */
-package javagraphics;
+package triangulomaximal;
 
+import javagraphics.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 

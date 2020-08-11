@@ -1,5 +1,6 @@
-package javagraphics;
+package triangulomaximal;
 
+import javagraphics.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
