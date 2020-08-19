@@ -6,7 +6,8 @@
 
 package triangulomaximal;
 
-import javagraphics.*;
+import java.awt.Color;
+
 
 /**
  *
@@ -21,5 +22,6 @@ import javagraphics.*;
 class Point2D {
    float x, y;
    Linea linea;
+   Color color;
    Point2D(float x, float y) {this.x = x; this.y = y;}
 }

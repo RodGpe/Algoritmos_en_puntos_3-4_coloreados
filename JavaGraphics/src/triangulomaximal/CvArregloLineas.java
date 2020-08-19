@@ -15,10 +15,11 @@ class CvArregloLineas extends Canvas {
 
     Vector<Point2D> v = new Vector<Point2D>();
     Vector<Point2D> vBlue = new Vector<Point2D>();
+    //float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
     int centerX, centerY;
-    int numerodePuntos = 3;
+    int numerodePuntos = 12;
     float separacionMinima = .5f;
     // declaro como variable de clase todo lo que su use para pintar
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
@@ -33,37 +34,73 @@ class CvArregloLineas extends Canvas {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
                 DCEList dcel = new DCEList();
-                Vertex v10 = new Vertex(-5, 5, null);
-                Vertex v20 = new Vertex(7, -4, null);
-                HalfEdge linea = new HalfEdge(null, null, null, null, null);
-                HalfEdge e2010 = new HalfEdge(null, null, null, null, null);
-                linea.origin = v10;
-                linea.next = e2010;
-                linea.prev = e2010;
-                linea.twin = e2010;
+//                Vertex v10 = new Vertex(-5, 5, null);
+//                Vertex v20 = new Vertex(7, -4, null);
+//                HalfEdge linea = new HalfEdge(null, null, null, null, null);
+//                HalfEdge e2010 = new HalfEdge(null, null, null, null, null);
+//                linea.origin = v10;
+//                linea.next = e2010;
+//                linea.prev = e2010;
+//                linea.twin = e2010;
+//
+//                e2010.origin = v20;
+//                e2010.next = linea;
+//                e2010.prev = linea;
+//                e2010.twin = linea;
 
-                e2010.origin = v20;
-                e2010.next = linea;
-                e2010.prev = linea;
-                e2010.twin = linea;
-                dcel.crearBoundingBox(4, -4, 4, -4, edgeList, vertexList, faceList);
+                rectasDuales = transformarPuntosaRectas(generarPuntosAleatorios());
+                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba());
+                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba2());
+                //rectasDuales = transformarPuntosaRectas(generarPuntos());
+                ArrayList<Point2D> intersecciones = new ArrayList<Point2D>();
 
-                rectasDuales = transformarPuntosaRectas(generarPuntos());
-                for (Linea dual : rectasDuales) {
-                    dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
-                    primeras.add(dual.primerArista);
-                }
-                ArrayList<HalfEdge> segmentosLinea = new ArrayList<>();
-                segmentosLinea = dcel.recorrerLinea(primeras.get(1), faceList.get(1));
-                //pruebas = primeras; //para pintar las primeras aristas de las rectas
-                //pruebas = edgeList; //para pintar todo 
-                ArrayList<HalfEdge> conLinea = new ArrayList<>();
-                for (HalfEdge conLine : edgeList) {
-                    if (conLine.line != null) {
-                        conLinea.add(conLine);
+                for (int i = 0; i < rectasDuales.size(); i++) {
+                    for (int j = i; j < rectasDuales.size(); j++) {
+                        if (i != j) { // no intersecamos rectas que son iguales
+                            intersecciones.add(calcularInterseccionDual(rectasDuales.get(i).puntoPrimal, rectasDuales.get(j).puntoPrimal, null));
+                        }
                     }
                 }
-                dcel.imprimirLista(edgeList);
+                float extD = 0, extI = 0, extS = 0, extIn = 0;
+                for (Point2D interseccione : intersecciones) {
+                    if (Math.abs(interseccione.x) > extD) {
+                        extD = interseccione.x + 1;
+                        extI = -(interseccione.x + 1);
+                        rWidth = (interseccione.x * 2) + 3;
+                    }
+                    if (Math.abs(interseccione.y) > extS) {
+                        extS = interseccione.y + 1;
+                        extIn = -(interseccione.y + 1);
+                        rHeight = (interseccione.y * 2) + 3;
+                    }
+                }
+                rWidth = 102;
+                rHeight = 102;
+                dcel.crearBoundingBox(50, -50, 50, -50, edgeList, vertexList, faceList);
+//                rWidth = 192;
+//                rHeight = 192;
+//                dcel.crearBoundingBox(90, -90, 90, -90, edgeList, vertexList, faceList);
+
+                for (Point2D interseccione : intersecciones) {
+                    System.out.println("interseccion: " + interseccione.x + ", " + interseccione.y);
+                }
+
+                for (Linea dual : rectasDuales) {
+                    dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
+                    //primeras.add(new HalfEdge(dual.primerArista.origin, dual.primerArista.next, dual.primerArista.prev, dual.primerArista.twin, dual.primerArista.face));
+                    //primeras.add(dual.primerArista);
+                }
+                //este for debe ir despues porque el dual.arista se puede actualizar por cada linea agregada
+                for (Linea dual : rectasDuales) {
+                    primeras.add(dual.primerArista);
+                }
+//                ArrayList<HalfEdge> segmentosLinea = new ArrayList<>();
+//                segmentosLinea = dcel.recorrerLinea(primeras.get(1), faceList.get(1));
+
+                for (Linea rectasDuale : rectasDuales) {
+                    System.out.println("v.add(new Point2D(" + rectasDuale.puntoPrimal.x + "f, " + rectasDuale.puntoPrimal.y + "f));");
+                }
+                //dcel.imprimirLista(edgeList);
                 orden = dcel.obtenerOrden(primeras.get(0), faceList.get(1));
                 //pruebas = segmentosLinea; //para pintar una linea en segmentos 
                 //pruebas = primeras;
@@ -110,14 +147,21 @@ class CvArregloLineas extends Canvas {
 //        for (Linea recta : rectasDuales) {
 //            g.drawLine(iX(recta.origin.x), iY(recta.origin.y), iX(recta.twin.origin.x), iY(recta.twin.origin.y));
 //        }
-
         //codigo para dibujar aristas
         g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
         g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
         for (HalfEdge next : pruebas) {
+            //for (HalfEdge next : edgeList) {
             g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+            //g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
             g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+            //g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+        }
+        //codigo para dibujar la primeras en el .png
+        int k = 0;
+        for (HalfEdge next : primeras) {
+            g2d.drawString("" + (++k), iX(next.origin.x), iY(next.origin.y));
+            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
             g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
         }
 
@@ -132,7 +176,7 @@ class CvArregloLineas extends Canvas {
         for (HalfEdge halfEdge : orden) {
             Point2D puntoRef = primeras.get(0).line.puntoPrimal;
             System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
-            System.out.println(""+ halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
+            System.out.println("" + halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
             g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
             g.drawString("" + (++i), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
         }
@@ -171,14 +215,14 @@ class CvArregloLineas extends Canvas {
     public Linea calcularDual(Point2D punto, Graphics g) {
         float y1 = 0.0F;
         float y2 = 0.0F;
-        float x1 = 20, x2 = -20;
+        float x1 = 200, x2 = -200;
 
         //y1 = m*x1-b2
         y1 = punto.x * x1 - punto.y;
         //y2 = m*x2-b2
         y2 = punto.x * x2 - punto.y;
-        System.out.println(x1 + " " + y1);
-        System.out.println(x2 + " " + y2);
+        //System.out.println(x1 + " " + y1);
+        //System.out.println(x2 + " " + y2);
 //        g.setColor(Color.yellow);
 //        g.drawLine(iX(x1), iY(y1), iX(x2), iY(y2));
         DCEList dcel = new DCEList();
@@ -196,10 +240,10 @@ class CvArregloLineas extends Canvas {
         x = (b1 - b2) / (m1 - m2);
         y1 = (m1 * x) - b1;
         y2 = (m2 * x) - b2;
-        System.out.println("x" + x);
-        System.out.println("interseccion en" + x + " " + y1);
-        g.setColor(Color.blue);
-        g.fillRect(iX(x) - 2, iY(y1) - 2, 4, 4); // Tiny rectangle; 
+        //System.out.println("x" + x);
+        //System.out.println("interseccion en" + x + " " + y1);
+        //g.setColor(Color.blue);
+        //g.fillRect(iX(x) - 2, iY(y1) - 2, 4, 4); // Tiny rectangle; 
         return new Point2D(x, y1);
     }
 
@@ -211,12 +255,12 @@ class CvArregloLineas extends Canvas {
             float maxY = (rHeight / 2) - .1f;
             r = new Random();
             float randomRedY = minY + r.nextFloat() * (maxY - minY);
-            System.out.println("random red y = " + randomRedY);
+            //System.out.println("random red y = " + randomRedY);
             float minX = (-(rWidth / 2)) + .1f;
             float maxX = (rWidth / 2) - .1f;
             r = new Random();
             float randomRedX = minX + r.nextFloat() * (maxX - minX);
-            System.out.println("random red x = " + randomRedX);
+//            System.out.println("random red x = " + randomRedX);
             Point2D aVerificarRed = new Point2D(randomRedX, randomRedY);
             while (verificarAlineacion(v, aVerificarRed)) {
                 //System.out.println("quise poner un rojo pero esta alineado alv");
@@ -226,7 +270,7 @@ class CvArregloLineas extends Canvas {
                 randomRedY = minY + r.nextFloat() * (maxY - minY);
                 aVerificarRed = new Point2D(randomRedX, randomRedY);
             }
-            v.addElement(new Point2D(randomRedX, randomRedY));
+            v.add(new Point2D(randomRedX, randomRedY));
         }
         return v;
     }
@@ -237,6 +281,41 @@ class CvArregloLineas extends Canvas {
         v.add(new Point2D(-0.78f, -1.4f));
         v.add(new Point2D(0.24f, 0.74f));
         v.add(new Point2D(-0.44f, -1.44f));
+        return v;
+    }
+
+    //para generar puntos de prueba
+    public Vector generarPuntosPrueba() {
+        v = new Vector<Point2D>();
+        v.add(new Point2D(4.093657f, -3.7574651f));
+        v.add(new Point2D(2.2738342f, 3.3094459f));
+        v.add(new Point2D(-3.2783852f, 3.855044f));
+        v.add(new Point2D(-2.664117f, 1.297091f));
+        v.add(new Point2D(1.0673037f, -2.8855095f));
+        v.add(new Point2D(2.8079023f, -0.43232393f));
+        v.add(new Point2D(0.4696145f, -1.491689f));
+        v.add(new Point2D(-4.5517263f, 2.2202463f));
+        v.add(new Point2D(-0.78973055f, -4.7208543f));
+        v.add(new Point2D(3.3992982f, 4.780603f));
+        v.add(new Point2D(-0.20737553f, 0.5037036f));
+        v.add(new Point2D(-3.9037566f, -2.3219142f));
+        return v;
+    }
+
+    public Vector generarPuntosPrueba2() {
+        v = new Vector<Point2D>();
+        v.add(new Point2D(-0.974509f, -1.0474205f));
+        v.add(new Point2D(-3.6944203f, 4.2643304f));
+        v.add(new Point2D(-4.209582f, 3.082199f));
+        v.add(new Point2D(2.373415f, -3.5292802f));
+        v.add(new Point2D(-0.08396673f, 0.8875327f));
+        v.add(new Point2D(-2.2308152f, -1.8010471f));
+        v.add(new Point2D(4.748339f, -2.4762938f));
+        v.add(new Point2D(1.7718267f, 0.06327295f));
+        v.add(new Point2D(3.5944953f, 1.8263621f));
+        v.add(new Point2D(0.6526103f, -4.4022f));
+        v.add(new Point2D(4.2021174f, 2.3445287f));
+        v.add(new Point2D(-2.7426038f, 3.6003747f));
         return v;
     }
 

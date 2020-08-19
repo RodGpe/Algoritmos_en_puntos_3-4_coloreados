@@ -89,8 +89,7 @@ class CvInterseccionLineas extends Canvas {
 //        g.drawLine(iX(x1), iY(y1), iX(x2), iY(y2));
         this.calcularDual(v.elementAt(0), g);
         this.calcularDual(v.elementAt(1), g);
-        for (Iterator<Point2D> iterator = v.iterator(); iterator.hasNext();) {
-            Point2D next = iterator.next();
+        for (Point2D next : v) {
             this.calcularDual(next, g);
         }
 
@@ -101,7 +100,7 @@ class CvInterseccionLineas extends Canvas {
             for (int j = 0; j < v.size(); j++) {
                 punto = this.calcularInterseccionDual(v.elementAt(i), v.elementAt(j), g);
             }
-            
+
         }
         //fin calcular las intersecciones------------------------
         //this.calcularDual(punto, g);

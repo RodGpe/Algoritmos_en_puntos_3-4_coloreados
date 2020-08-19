@@ -15,6 +15,7 @@ import java.util.Iterator;
 public class DCEList {
 
     public static final String ANSI_GREEN = "\u001B[32m";
+    float masALaDerecha; //se declara de clase porque se accede en varios metodos
 
     public static void main(String[] args) {
 
@@ -33,6 +34,8 @@ public class DCEList {
 
     public void crearBoundingBox(float extDer, float extIzq, float extSup, float extInf, ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, ArrayList<Face> faceList) {
 
+        
+        masALaDerecha = extDer; //se actualiza aqui porque la bounding box tiene el punto más a la izquierda
         vertexList.add(new Vertex(extIzq, extSup, null));
 
         vertexList.add(new Vertex(extDer, extSup, null));
@@ -140,7 +143,8 @@ public class DCEList {
      * segundo [1] la arista intersecad
      */
     public ArrayList<Object> intersectarLineaFronteraPorIzq(ArrayList<HalfEdge> frontera, HalfEdge linea) {
-        Vertex interIzquierda = new Vertex(5, 0, null); //tiene que tener un valor en x mayor que todos los puntos del arreglo
+        //Vertex interIzquierda = new Vertex(5, 0, null); //tiene que tener un valor en x mayor que todos los puntos del arreglo
+        Vertex interIzquierda = new Vertex(masALaDerecha, 0, null); //tiene que tener un valor en x mayor que todos los puntos del arreglo
         HalfEdge aristaInterIzq = null;// new HalfEdge(null, null, null, null, null);
         Iterator iter = frontera.iterator();
         while (iter.hasNext()) {
@@ -268,6 +272,7 @@ public class DCEList {
     }
 
     /**
+     * a------c(interseccion))------b(aristaintersecada origin)
      *
      * @param interseccion
      * @param aristaIntersecada Puede ser la arista o su .twin el resultado no
@@ -452,11 +457,28 @@ public class DCEList {
             aristaInterseccion.next.twin.line = linea.regresarObjeto();     //asignar la linea a la arista 
             //....................para actualizar las aristas que fueron partidas
             aristaInterseccion.next.twin.next.line = aristaInterseccion.line;
+            aristaInterseccion.next.twin.next.twin.line = aristaInterseccion.line;
             aristaInterseccionNueva.next.twin.next.line = aristaInterseccionNueva.line;
+            aristaInterseccionNueva.next.twin.next.twin.line = aristaInterseccionNueva.line;
+            //---------la siguiente cadena de if es para manejar el caso donde se intersecan una primerArista con la linea 
+            //if (linea.puntoPrimal.x > 0) {
+                //System.out.println(ANSI_GREEN+"si es positivo"+ANSI_GREEN);
+                if (aristaInterseccionNueva.twin.line != null) {
+                    //System.out.println(ANSI_GREEN+"line no es null"+ANSI_GREEN);
+                    //if (aristaInterseccionNueva.twin.line.primerArista != null) {
+                    if (aristaInterseccionNueva.line.primerArista == aristaInterseccionNueva.twin) {
+                        //System.out.println(ANSI_GREEN+"primer arista no es null"+ANSI_GREEN);
+                        //System.out.println(ANSI_GREEN+aristaInterseccionNueva.line.primerArista+ANSI_GREEN);
+                        //System.out.println(ANSI_GREEN+aristaInterseccionNueva.next.twin.next.twin+ANSI_GREEN);
+                        aristaInterseccionNueva.twin.line.primerArista = aristaInterseccionNueva.next.twin.next.twin;
+                        //System.out.println(ANSI_GREEN+aristaInterseccionNueva.line.primerArista+ANSI_GREEN);
+                    }
+                }
+            //}
             //....................
             System.out.println(linea.puntoPrimal);
             if (guardarPrimer) {        //para guardar el primer segmento de la linea
-                linea.primerArista = aristaInterseccion.next;   //en este momento aristaIterseccion.next es la arista de corte
+                //linea.primerArista = aristaInterseccion.next;   //en este momento aristaIterseccion.next es la arista de corte
                 guardarPrimer = false;
                 primer = aristaInterseccion.next;
             }
@@ -464,12 +486,14 @@ public class DCEList {
                 break;
             }
             aristaInterseccion = aristaInterseccionNueva.twin.prev;
+            aristaInterseccion = aristaInterseccionNueva.next.twin.next.twin;
         }
         System.out.println("termine de agregar linea------------------------------");
         System.out.println("primer arista de la linea es " + linea.primerArista + "-------------");
         return primer;
     }
 
+    ;
     public HalfEdge nextEdge(HalfEdge edge) {
         return edge.next.twin.next;
     }
@@ -500,9 +524,9 @@ public class DCEList {
         for (HalfEdge segmento : segmentos) {
             if (segmento.next.twin.face != unbounded) {
                 if (segmento.next.line.puntoPrimal.x > primera.line.puntoPrimal.x) {
-                    System.out.println(segmento.next.twin); 
-                    System.out.println(segmento.next.twin.line); 
-                   orden.add(segmento.next);
+                    System.out.println(segmento.next.twin);
+                    System.out.println(segmento.next.twin.line);
+                    orden.add(segmento.next);
                 }
             }
         }
