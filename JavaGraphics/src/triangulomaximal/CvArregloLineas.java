@@ -19,8 +19,8 @@ class CvArregloLineas extends Canvas {
     float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
     int centerX, centerY;
-    int numerodePuntos = 12;
-    float separacionMinima = .5f;
+    int numerodePuntos = 50;
+    float separacionMinima = .1f;
     // declaro como variable de clase todo lo que su use para pintar
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
     ArrayList<HalfEdge> edgeList = new ArrayList<HalfEdge>();
@@ -33,6 +33,11 @@ class CvArregloLineas extends Canvas {
 
     CvArregloLineas() {
         addMouseListener(new MouseAdapter() {
+            Vector<Point2D> puntosPrimales = generarPuntosAleatorios();
+            //puntosPrimales = generarPuntos();
+            //puntosPrimales  = generarPuntosAleatorios();
+            //puntosPrimales = generarPuntosPrueba2();
+
             public void mousePressed(MouseEvent evt) {
                 DCEList dcel = new DCEList();
 //                Vertex v10 = new Vertex(-5, 5, null);
@@ -48,10 +53,6 @@ class CvArregloLineas extends Canvas {
 //                e2010.next = linea;
 //                e2010.prev = linea;
 //                e2010.twin = linea;
-                Vector<Point2D> puntosPrimales = new Vector<Point2D>();
-                //puntosPrimales = generarPuntos();
-                puntosPrimales = generarPuntosAleatorios();
-                //puntosPrimales = generarPuntosPrueba2();
 
                 ArrayList<Point2D> intersecciones = new ArrayList<Point2D>();
                 for (int i = 0; i < puntosPrimales.size(); i++) {
@@ -119,6 +120,22 @@ class CvArregloLineas extends Canvas {
                 //pruebas = conLinea; //para pintar una linea en segmentos 
                 Poligono poli = new Poligono();
                 minTri = poli.buscarTrianguloMin(rectasDuales.get(0));
+                minTri = null;
+                for (Linea rectasDuale : rectasDuales) {
+                    Triangulo nuevoTriangulo;
+                    Poligono poligono = new Poligono();
+                    nuevoTriangulo = poligono.buscarTrianguloMin(rectasDuale);
+                    if (nuevoTriangulo != null) {
+                        if (minTri == null) {
+                            minTri = nuevoTriangulo;
+                        }else{
+                            if (nuevoTriangulo.area < minTri.area) {
+                                minTri = nuevoTriangulo;
+                            }
+                        }
+                        
+                    }
+                }
                 pruebas = edgeList;
                 repaint();
             }
@@ -158,36 +175,38 @@ class CvArregloLineas extends Canvas {
         int left = iX(-rWidth / 2), right = iX(rWidth / 2);
         int bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
 
-//        codigo para dibujar rectas
+//        //---------------codigo para dibujar rectas---------------
 //        for (Linea recta : rectasDuales) {
 //            g.drawLine(iX(recta.origin.x), iY(recta.origin.y), iX(recta.twin.origin.x), iY(recta.twin.origin.y));
 //        }
-        //codigo para dibujar aristas
-        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-        for (HalfEdge next : pruebas) {
-            //for (HalfEdge next : edgeList) {
-            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-            //g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-            g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-            //g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-        }
-        //codigo para dibujar la primeras en el .png
-        int k = 0;
-        for (HalfEdge next : primeras) {
-            g2d.drawString("" + (++k), iX(next.origin.x), iY(next.origin.y));
-            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-        }
+        //-------------------codigo para dibujar aristas--------------------
+//        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+//        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+//        for (HalfEdge next : pruebas) {
+//            //for (HalfEdge next : edgeList) {
+//            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+//            //g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+//            g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+//            //g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+//        }
+        //---------------codigo para dibujar la primeras en el .png----------------------------------
+//        int k = 0;
+//        for (HalfEdge next : primeras) {
+//            g2d.drawString("" + (++k), iX(next.origin.x), iY(next.origin.y));
+//            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+//            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+//        }
 
-        //codigo para dibujar los puntos
+        //---------------------codigo para dibujar los puntos---------------------------
         int i = 0;
         for (Point2D a : v) {
             g.setColor(a.color);
+            g2d.setColor(a.color);
             g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-            //g.drawString("" + (++i), iX(a.x), iY(a.y));
+            g2d.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+            g.drawString("" + (++i), iX(a.x), iY(a.y));
         }
-//        //codigo para dibujar un orden
+//        //---------codigo para dibujar un orden------------------------------------------
 //        for (HalfEdge halfEdge : orden) {
 //            Point2D puntoRef = primeras.get(0).line.puntoPrimal;
 //            System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
@@ -195,21 +214,27 @@ class CvArregloLineas extends Canvas {
 //            g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
 //            g.drawString("" + (++i), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
 //        }
-        if (!rectasDuales.isEmpty()) {
-            for (Point2D point2D : rectasDuales.get(0).puntoPrimal.orden) {
-                Point2D puntoRef = rectasDuales.get(0).puntoPrimal;
-                //System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
-                //System.out.println("" + halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
-                g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(point2D.x), iY(point2D.y));
-                g.drawString("" + (++i), iX(point2D.x), iY(point2D.y));
-            }
-        }
+
+        //nuevo codigo para dibujar el orden de un punto
+//        if (!rectasDuales.isEmpty()) {
+//            for (Point2D point2D : rectasDuales.get(0).puntoPrimal.orden) {
+//                Point2D puntoRef = rectasDuales.get(0).puntoPrimal;
+//                //System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
+//                //System.out.println("" + halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
+//                g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(point2D.x), iY(point2D.y));
+//                g.drawString("" + (++i), iX(point2D.x), iY(point2D.y));
+//            }
+//        }
         //para dibujar triangulo
         g.setColor(Color.black);
+        g2d.setColor(Color.white);
         if (minTri != null) {
             g.drawLine(iX(minTri.a.x), iY(minTri.a.y), iX(minTri.b.x), iY(minTri.b.y));
+            g2d.drawLine(iX(minTri.a.x), iY(minTri.a.y), iX(minTri.b.x), iY(minTri.b.y));
             g.drawLine(iX(minTri.b.x), iY(minTri.b.y), iX(minTri.c.x), iY(minTri.c.y));
+            g2d.drawLine(iX(minTri.b.x), iY(minTri.b.y), iX(minTri.c.x), iY(minTri.c.y));
             g.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
+            g2d.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
         }
         //para exportar imagen
         g2d.dispose();

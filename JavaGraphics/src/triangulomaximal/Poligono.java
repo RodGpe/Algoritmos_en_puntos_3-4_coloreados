@@ -38,10 +38,16 @@ public class Poligono {
 //            }
 //            System.out.print("\n");
 //        }
-        ArrayList<PuntoPoligono> puntos = poli.crearOrden();
-        poli.CrearArregloConvexo(puntos, Color.blue);
+//        poli.referencia = new PuntoPoligono(0, 0);
+//        ArrayList<PuntoPoligono> puntos = poli.crearOrden();
+//        poli.CrearArregloConvexo(puntos, Color.blue);
+//        poli.buscarYMIN(poli.ultimoInsertado); //
+//        poli.reverseOrder(puntos, Color.blue, Color.red);
+        poli.referencia = new PuntoPoligono(1, 2);
+        ArrayList<PuntoPoligono> puntos = poli.crearOrden2();
+        poli.CrearArregloConvexo(puntos, Color.red);
         poli.buscarYMIN(poli.ultimoInsertado); //
-        poli.reverseOrder(puntos, Color.blue, Color.red);
+        poli.reverseOrder(puntos, Color.red, Color.blue);
         //double angle = poli.calcDegrees(poli.ultimoInsertado, poli.ultimoInsertado.next.peek());
         //System.out.println(angle);
     }
@@ -170,25 +176,25 @@ public class Poligono {
         return b;
     }
 
-    //falta considerar el caso cuando los convexos son vacios !!!!
-    public void buscarYMIN(PuntoPoligono p) {
+    public void buscarYMIN(PuntoPoligono ultimo) {
+        PuntoPoligono iterador;
+        PuntoPoligono minY;
+        iterador = ultimo;
+        minY = iterador;
         if (cardinalidad == 0) {
             return;
         }
         if (cardinalidad == 1) {
+            inicioBusqueda = minY;
             return;
         }
-        PuntoPoligono iterador;
-        PuntoPoligono minY;
-        iterador = p;
-        minY = iterador;
         do {
             System.out.println("convexo" + iterador.x + " " + iterador.y);
             if (iterador.y < minY.y) {
                 minY = iterador;
             }
             iterador = iterador.next.peek();
-        } while (iterador != p);
+        } while (iterador != ultimo);
         System.out.println("menor es " + minY.x + " " + minY.y);
         inicioBusqueda = minY;
     }
@@ -251,6 +257,9 @@ public class Poligono {
             inicioBusqueda = inicioBusqueda; //asignacion para clarificar
         }
         cardinalidad = cardinalidad - 1;
+        if (cardinalidad == 0) {
+            return;
+        }
         p.prev.next.pop();
     }
 
@@ -295,6 +304,13 @@ public class Poligono {
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.blue, -6, 6));
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.red, -4, 5));
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.blue, -2, 4));
+        return puntos;
+    }
+        public ArrayList crearOrden2() {
+        ArrayList<PuntoPoligono> puntos = new ArrayList<PuntoPoligono>();
+        puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.red, 3, 5));
+        puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.green, 5, 4));
+
         return puntos;
     }
 
