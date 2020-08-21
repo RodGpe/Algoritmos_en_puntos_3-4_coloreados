@@ -34,7 +34,6 @@ public class DCEList {
 
     public void crearBoundingBox(float extDer, float extIzq, float extSup, float extInf, ArrayList<HalfEdge> edgeList, ArrayList<Vertex> vertexList, ArrayList<Face> faceList) {
 
-        
         masALaDerecha = extDer; //se actualiza aqui porque la bounding box tiene el punto más a la izquierda
         vertexList.add(new Vertex(extIzq, extSup, null));
 
@@ -398,23 +397,22 @@ public class DCEList {
         return corte;
     }
 
-    public HalfEdge crearArista(float x1, float y1, float x2, float y2) {
-        Vertex v10 = new Vertex(x1, y1, null);
-        Vertex v20 = new Vertex(x2, y2, null);
-        HalfEdge linea = new HalfEdge(null, null, null, null, null);
-        HalfEdge e2010 = new HalfEdge(null, null, null, null, null);
-        linea.origin = v10;
-        linea.next = e2010;
-        linea.prev = e2010;
-        linea.twin = e2010;
-
-        e2010.origin = v20;
-        e2010.next = linea;
-        e2010.prev = linea;
-        e2010.twin = linea;
-        return linea;
-    }
-
+//    public HalfEdge crearArista(float x1, float y1, float x2, float y2) {
+//        Vertex v10 = new Vertex(x1, y1, null);
+//        Vertex v20 = new Vertex(x2, y2, null);
+//        HalfEdge linea = new HalfEdge(null, null, null, null, null);
+//        HalfEdge e2010 = new HalfEdge(null, null, null, null, null);
+//        linea.origin = v10;
+//        linea.next = e2010;
+//        linea.prev = e2010;
+//        linea.twin = e2010;
+//
+//        e2010.origin = v20;
+//        e2010.next = linea;
+//        e2010.prev = linea;
+//        e2010.twin = linea;
+//        return linea;
+//    }
     public Linea crearLinea(float x1, float y1, float x2, float y2) {
         Vertex v10 = new Vertex(x1, y1, null);
         Vertex v20 = new Vertex(x2, y2, null);
@@ -462,18 +460,18 @@ public class DCEList {
             aristaInterseccionNueva.next.twin.next.twin.line = aristaInterseccionNueva.line;
             //---------la siguiente cadena de if es para manejar el caso donde se intersecan una primerArista con la linea 
             //if (linea.puntoPrimal.x > 0) {
-                //System.out.println(ANSI_GREEN+"si es positivo"+ANSI_GREEN);
-                if (aristaInterseccionNueva.twin.line != null) {
-                    //System.out.println(ANSI_GREEN+"line no es null"+ANSI_GREEN);
-                    //if (aristaInterseccionNueva.twin.line.primerArista != null) {
-                    if (aristaInterseccionNueva.line.primerArista == aristaInterseccionNueva.twin) {
-                        //System.out.println(ANSI_GREEN+"primer arista no es null"+ANSI_GREEN);
-                        //System.out.println(ANSI_GREEN+aristaInterseccionNueva.line.primerArista+ANSI_GREEN);
-                        //System.out.println(ANSI_GREEN+aristaInterseccionNueva.next.twin.next.twin+ANSI_GREEN);
-                        aristaInterseccionNueva.twin.line.primerArista = aristaInterseccionNueva.next.twin.next.twin;
-                        //System.out.println(ANSI_GREEN+aristaInterseccionNueva.line.primerArista+ANSI_GREEN);
-                    }
+            //System.out.println(ANSI_GREEN+"si es positivo"+ANSI_GREEN);
+            if (aristaInterseccionNueva.twin.line != null) {
+                //System.out.println(ANSI_GREEN+"line no es null"+ANSI_GREEN);
+                //if (aristaInterseccionNueva.twin.line.primerArista != null) {
+                if (aristaInterseccionNueva.line.primerArista == aristaInterseccionNueva.twin) {
+                    //System.out.println(ANSI_GREEN+"primer arista no es null"+ANSI_GREEN);
+                    //System.out.println(ANSI_GREEN+aristaInterseccionNueva.line.primerArista+ANSI_GREEN);
+                    //System.out.println(ANSI_GREEN+aristaInterseccionNueva.next.twin.next.twin+ANSI_GREEN);
+                    aristaInterseccionNueva.twin.line.primerArista = aristaInterseccionNueva.next.twin.next.twin;
+                    //System.out.println(ANSI_GREEN+aristaInterseccionNueva.line.primerArista+ANSI_GREEN);
                 }
+            }
             //}
             //....................
             System.out.println(linea.puntoPrimal);
@@ -524,8 +522,8 @@ public class DCEList {
         for (HalfEdge segmento : segmentos) {
             if (segmento.next.twin.face != unbounded) {
                 if (segmento.next.line.puntoPrimal.x > primera.line.puntoPrimal.x) {
-                    System.out.println(segmento.next.twin);
-                    System.out.println(segmento.next.twin.line);
+                    //System.out.println(segmento.next.twin);
+                    //System.out.println(segmento.next.twin.line);
                     orden.add(segmento.next);
                 }
             }

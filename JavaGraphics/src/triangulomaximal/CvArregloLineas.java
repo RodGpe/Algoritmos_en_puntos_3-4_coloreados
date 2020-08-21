@@ -29,6 +29,7 @@ class CvArregloLineas extends Canvas {
     ArrayList<Linea> rectasDuales = new ArrayList<>();
     ArrayList<HalfEdge> orden = new ArrayList<>();
     ArrayList<HalfEdge> primeras = new ArrayList<HalfEdge>();
+    Triangulo minTri = null;
 
     CvArregloLineas() {
         addMouseListener(new MouseAdapter() {
@@ -47,44 +48,54 @@ class CvArregloLineas extends Canvas {
 //                e2010.next = linea;
 //                e2010.prev = linea;
 //                e2010.twin = linea;
+                Vector<Point2D> puntosPrimales = new Vector<Point2D>();
+                //puntosPrimales = generarPuntos();
+                puntosPrimales = generarPuntosAleatorios();
+                //puntosPrimales = generarPuntosPrueba2();
 
-                rectasDuales = transformarPuntosaRectas(generarPuntosAleatorios());
-                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba());
-                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba2());
-                //rectasDuales = transformarPuntosaRectas(generarPuntos());
                 ArrayList<Point2D> intersecciones = new ArrayList<Point2D>();
-
-                for (int i = 0; i < rectasDuales.size(); i++) {
-                    for (int j = i; j < rectasDuales.size(); j++) {
+                for (int i = 0; i < puntosPrimales.size(); i++) {
+                    for (int j = i; j < puntosPrimales.size(); j++) {
                         if (i != j) { // no intersecamos rectas que son iguales
-                            intersecciones.add(calcularInterseccionDual(rectasDuales.get(i).puntoPrimal, rectasDuales.get(j).puntoPrimal, null));
+                            intersecciones.add(calcularInterseccionDual(puntosPrimales.get(i), puntosPrimales.get(j), null));
                         }
                     }
                 }
                 float extD = 0, extI = 0, extS = 0, extIn = 0;
                 for (Point2D interseccione : intersecciones) {
                     if (Math.abs(interseccione.x) > extD) {
-                        extD = interseccione.x + 1;
-                        extI = -(interseccione.x + 1);
-                        rWidth = (interseccione.x * 2) + 3;
+                        extD = Math.abs(interseccione.x);
+                        extI = -(Math.abs(interseccione.x));
+                        rWidth = (Math.abs(interseccione.x) * 2) + 3;
                     }
                     if (Math.abs(interseccione.y) > extS) {
-                        extS = interseccione.y + 1;
-                        extIn = -(interseccione.y + 1);
-                        rHeight = (interseccione.y * 2) + 3;
+                        extS = Math.abs(interseccione.y);
+                        extIn = -(Math.abs(interseccione.y));
+                        rHeight = (Math.abs(interseccione.y) * 2) + 3;
                     }
+//                    System.out.println("inter at   " + interseccione.x);
+//                    System.out.println("nueva extD " + extD);
+
+                    //System.out.println("inter at   " + interseccione.y);
+                    //System.out.println("nueva extD " + extS);
                 }
-                rWidth = 102;
-                rHeight = 102;
-                dcel.crearBoundingBox(50, -50, 50, -50, edgeList, vertexList, faceList);
+                extD = extD + 1;
+                extS = extS + 1;
+                extI = extI - 1;
+                extIn = extIn - 1;
+                //rWidth = 102;
+                //rHeight = 102;
+                //dcel.crearBoundingBox(50, -50, 50, -50, edgeList, vertexList, faceList);
+                dcel.crearBoundingBox(extD, extI, extS, extIn, edgeList, vertexList, faceList);
+
+                rectasDuales = transformarPuntosaRectas(puntosPrimales);
+                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba());
+                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba2());
+                //rectasDuales = transformarPuntosaRectas(generarPuntos());
+
 //                rWidth = 192;
 //                rHeight = 192;
 //                dcel.crearBoundingBox(90, -90, 90, -90, edgeList, vertexList, faceList);
-
-                for (Point2D interseccione : intersecciones) {
-                    System.out.println("interseccion: " + interseccione.x + ", " + interseccione.y);
-                }
-
                 for (Linea dual : rectasDuales) {
                     dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
                     //primeras.add(new HalfEdge(dual.primerArista.origin, dual.primerArista.next, dual.primerArista.prev, dual.primerArista.twin, dual.primerArista.face));
@@ -100,11 +111,14 @@ class CvArregloLineas extends Canvas {
                 for (Linea rectasDuale : rectasDuales) {
                     System.out.println("v.add(new Point2D(" + rectasDuale.puntoPrimal.x + "f, " + rectasDuale.puntoPrimal.y + "f));");
                 }
+                crearOrdenArribaPunto(rectasDuales, faceList.get(1), dcel);
                 //dcel.imprimirLista(edgeList);
-                orden = dcel.obtenerOrden(primeras.get(0), faceList.get(1));
+                //orden = dcel.obtenerOrden(primeras.get(0), faceList.get(1));
                 //pruebas = segmentosLinea; //para pintar una linea en segmentos 
                 //pruebas = primeras;
                 //pruebas = conLinea; //para pintar una linea en segmentos 
+                Poligono poli = new Poligono();
+                minTri = poli.buscarTrianguloMin(rectasDuales.get(0));
                 pruebas = edgeList;
                 repaint();
             }
@@ -138,7 +152,8 @@ class CvArregloLineas extends Canvas {
     public void paint(Graphics g) {
         BufferedImage bufferedImage = new BufferedImage(1366, 768, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = bufferedImage.createGraphics();    //para dibujar sobre la imagen que se exporta
-
+        rWidth = 10F;
+        rHeight = 10.0F;
         initgr();
         int left = iX(-rWidth / 2), right = iX(rWidth / 2);
         int bottom = iY(-rHeight / 2), top = iY(rHeight / 2);
@@ -168,17 +183,33 @@ class CvArregloLineas extends Canvas {
         //codigo para dibujar los puntos
         int i = 0;
         for (Point2D a : v) {
-            g.setColor(Color.red);
+            g.setColor(a.color);
             g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
             //g.drawString("" + (++i), iX(a.x), iY(a.y));
         }
-        //codigo para dibujar un orden
-        for (HalfEdge halfEdge : orden) {
-            Point2D puntoRef = primeras.get(0).line.puntoPrimal;
-            System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
-            System.out.println("" + halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
-            g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
-            g.drawString("" + (++i), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
+//        //codigo para dibujar un orden
+//        for (HalfEdge halfEdge : orden) {
+//            Point2D puntoRef = primeras.get(0).line.puntoPrimal;
+//            System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
+//            System.out.println("" + halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
+//            g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
+//            g.drawString("" + (++i), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
+//        }
+        if (!rectasDuales.isEmpty()) {
+            for (Point2D point2D : rectasDuales.get(0).puntoPrimal.orden) {
+                Point2D puntoRef = rectasDuales.get(0).puntoPrimal;
+                //System.out.println("punto ref" + puntoRef.x + " " + puntoRef.y);
+                //System.out.println("" + halfEdge.line.puntoPrimal.x + " " + halfEdge.line.puntoPrimal.y);
+                g.drawLine(iX(puntoRef.x), iY(puntoRef.y), iX(point2D.x), iY(point2D.y));
+                g.drawString("" + (++i), iX(point2D.x), iY(point2D.y));
+            }
+        }
+        //para dibujar triangulo
+        g.setColor(Color.black);
+        if (minTri != null) {
+            g.drawLine(iX(minTri.a.x), iY(minTri.a.y), iX(minTri.b.x), iY(minTri.b.y));
+            g.drawLine(iX(minTri.b.x), iY(minTri.b.y), iX(minTri.c.x), iY(minTri.c.y));
+            g.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
         }
         //para exportar imagen
         g2d.dispose();
@@ -215,7 +246,7 @@ class CvArregloLineas extends Canvas {
     public Linea calcularDual(Point2D punto, Graphics g) {
         float y1 = 0.0F;
         float y2 = 0.0F;
-        float x1 = 200, x2 = -200;
+        float x1 = rWidth / 2, x2 = -(rWidth / 2); //porque ninguna interseccion ocurre más lejos que esas coordenadas x
 
         //y1 = m*x1-b2
         y1 = punto.x * x1 - punto.y;
@@ -250,14 +281,18 @@ class CvArregloLineas extends Canvas {
     public Vector generarPuntosAleatorios() {
         v = new Vector<Point2D>();
         Random r;//= new Random();
+        int maxAlto = 10;
+        int maxAncho = 10;
+        Color colores[] = {Color.RED, Color.BLUE, Color.GREEN};
+        int contadorColor = 0;
         for (int i = 0; i < numerodePuntos; i++) {
-            float minY = (-(rHeight / 2)) + .1f;
-            float maxY = (rHeight / 2) - .1f;
+            float minY = (-(maxAlto / 2)) + .1f;
+            float maxY = (maxAlto / 2) - .1f;
             r = new Random();
             float randomRedY = minY + r.nextFloat() * (maxY - minY);
             //System.out.println("random red y = " + randomRedY);
-            float minX = (-(rWidth / 2)) + .1f;
-            float maxX = (rWidth / 2) - .1f;
+            float minX = (-(maxAncho / 2)) + .1f;
+            float maxX = (maxAncho / 2) - .1f;
             r = new Random();
             float randomRedX = minX + r.nextFloat() * (maxX - minX);
 //            System.out.println("random red x = " + randomRedX);
@@ -270,7 +305,8 @@ class CvArregloLineas extends Canvas {
                 randomRedY = minY + r.nextFloat() * (maxY - minY);
                 aVerificarRed = new Point2D(randomRedX, randomRedY);
             }
-            v.add(new Point2D(randomRedX, randomRedY));
+            v.add((Point2D) new PuntoPoligono(randomRedX, randomRedY, colores[contadorColor]));
+            contadorColor = (contadorColor + 1) % 3;
         }
         return v;
     }
@@ -304,18 +340,18 @@ class CvArregloLineas extends Canvas {
 
     public Vector generarPuntosPrueba2() {
         v = new Vector<Point2D>();
-        v.add(new Point2D(-0.974509f, -1.0474205f));
-        v.add(new Point2D(-3.6944203f, 4.2643304f));
-        v.add(new Point2D(-4.209582f, 3.082199f));
-        v.add(new Point2D(2.373415f, -3.5292802f));
-        v.add(new Point2D(-0.08396673f, 0.8875327f));
-        v.add(new Point2D(-2.2308152f, -1.8010471f));
-        v.add(new Point2D(4.748339f, -2.4762938f));
-        v.add(new Point2D(1.7718267f, 0.06327295f));
-        v.add(new Point2D(3.5944953f, 1.8263621f));
-        v.add(new Point2D(0.6526103f, -4.4022f));
-        v.add(new Point2D(4.2021174f, 2.3445287f));
-        v.add(new Point2D(-2.7426038f, 3.6003747f));
+        v.add((Point2D) new PuntoPoligono(-0.974509f, -1.0474205f, Color.GREEN));
+        v.add((Point2D) new PuntoPoligono(-3.6944203f, 4.2643304f, Color.RED));
+        v.add((Point2D) new PuntoPoligono(-4.209582f, 3.082199f, Color.RED));
+        v.add((Point2D) new PuntoPoligono(2.373415f, -3.5292802f, Color.BLUE));
+        v.add((Point2D) new PuntoPoligono(-0.08396673f, 0.8875327f, Color.RED));
+        v.add((Point2D) new PuntoPoligono(-2.2308152f, -1.8010471f, Color.BLUE));
+        v.add((Point2D) new PuntoPoligono(4.748339f, -2.4762938f, Color.RED));
+        v.add((Point2D) new PuntoPoligono(1.7718267f, 0.06327295f, Color.RED));
+        v.add((Point2D) new PuntoPoligono(3.5944953f, 1.8263621f, Color.RED));
+        v.add((Point2D) new PuntoPoligono(0.6526103f, -4.4022f, Color.BLUE));
+        v.add((Point2D) new PuntoPoligono(4.2021174f, 2.3445287f, Color.BLUE));
+        v.add((Point2D) new PuntoPoligono(-2.7426038f, 3.6003747f, Color.BLUE));
         return v;
     }
 
@@ -329,5 +365,25 @@ class CvArregloLineas extends Canvas {
             rectasDuales.add(auxiliar);
         }
         return rectasDuales;
+    }
+
+    /**
+     * metodo para eliminar del orden los puntos por debajo del punto de
+     * referencia y ordenando en sentido horario
+     *
+     * @param lineas
+     * @param unbounded
+     * @param dcel
+     */
+    public void crearOrdenArribaPunto(ArrayList<Linea> lineas, Face unbounded, DCEList dcel) {
+        for (Linea linea : lineas) {
+            //ArrayList<Point2D> ordenCompleto = new ArrayList<Point2D>();
+            for (HalfEdge halfEdge : dcel.obtenerOrden(linea.primerArista, unbounded)) {
+                if (halfEdge.line.puntoPrimal.y >= linea.puntoPrimal.y) {
+                    linea.puntoPrimal.orden.add(halfEdge.line.puntoPrimal);
+                }
+            }
+            Collections.reverse(linea.puntoPrimal.orden);
+        }
     }
 }

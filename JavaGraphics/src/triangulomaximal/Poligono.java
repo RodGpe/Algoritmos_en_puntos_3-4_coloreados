@@ -19,24 +19,85 @@ public class Poligono {
     int cardinalidad;
     PuntoPoligono ultimoInsertado;
     PuntoPoligono referencia = new PuntoPoligono(0, 0);
+    //PuntoPoligono referencia;
     PuntoPoligono tangente;
     PuntoPoligono inicioBusqueda;
+    Color[] coloresDisponibles = {Color.RED, Color.BLUE, Color.GREEN};
+    ArrayList<Color> coloresUtiles = new ArrayList<>();
+    ArrayList<ArrayList<Color>> permutaciones = new ArrayList();
+    Triangulo minimo = null;
 
     public static void main(String[] args) {
         Poligono poli = new Poligono();
+//        poli.permute(poli.coloresDisponibles);
+//        System.out.println("------");
+//        System.out.println("------");
+//        for (ArrayList<Color> permutacione : poli.permutaciones) {
+//            for (Color color : permutacione) {
+//                System.out.print(color);
+//            }
+//            System.out.print("\n");
+//        }
         ArrayList<PuntoPoligono> puntos = poli.crearOrden();
-        poli.CrearArregloConvexo(puntos);
-        poli.recorerConvexo(poli.ultimoInsertado);
-        poli.reverseOrder(puntos);
-        double angle = poli.calcDegrees(poli.ultimoInsertado, poli.ultimoInsertado.next.peek());
-        System.out.println(angle);
+        poli.CrearArregloConvexo(puntos, Color.blue);
+        poli.buscarYMIN(poli.ultimoInsertado); //
+        poli.reverseOrder(puntos, Color.blue, Color.red);
+        //double angle = poli.calcDegrees(poli.ultimoInsertado, poli.ultimoInsertado.next.peek());
+        //System.out.println(angle);
     }
 
-    public void CrearArregloConvexo(ArrayList<PuntoPoligono> puntos) {
+    /**
+     * Metodo para encontrar el triangulo de menor area heterocromático dados el
+     * punto y su orden
+     *
+     * @param linea
+     * @return
+     */
+    public Triangulo buscarTrianguloMin(Linea linea) {
+        referencia = (PuntoPoligono) linea.puntoPrimal;
+        eliminarColor(linea);
+        permute(new Color[]{coloresUtiles.get(0), coloresUtiles.get(1)}); // las guarda en el atributo de clase permutaciones
+        ArrayList<PuntoPoligono> ordenPoli = convertirPuntos(linea);
+        for (ArrayList<Color> permutacione : permutaciones) { //para buscar en todas las permutaciones de colres
+            Color color1 = permutacione.get(0);
+            Color color2 = permutacione.get(1);
+            CrearArregloConvexo(ordenPoli, color1);
+            buscarYMIN(ultimoInsertado); //
+            reverseOrder(ordenPoli, color1, color2);
+            limpiarClase();
+        }
+        return minimo;
+    }
+
+    /**
+     * de los colores a permutar elimina el color del punto primal de la linea
+     *
+     * @param linea
+     */
+    public void eliminarColor(Linea linea) {
+        for (Color coloresDisponible : coloresDisponibles) {
+            if (coloresDisponible != linea.puntoPrimal.color) {
+                coloresUtiles.add(coloresDisponible);
+            }
+        }
+    }
+
+    /**
+     * reinicializa los atributos de la clase
+     */
+    public void limpiarClase() {
+        cardinalidad = 0;
+        ultimoInsertado = null;
+        tangente = null;
+        inicioBusqueda = null;
+
+    }
+
+    public void CrearArregloConvexo(ArrayList<PuntoPoligono> puntos, Color color1) {
         cardinalidad = 0;
         for (PuntoPoligono p : puntos) {
-            //if (p.color.equals(Color.blue) || cardinalidad != 0) {
-            if (p.color.equals(Color.blue)) {
+            if (p.color.equals(color1)) {
+                //if (p.color.equals(Color.blue)) {
                 if (cardinalidad == 0) {
                     ultimoInsertado = p;
                     cardinalidad = 1;
@@ -109,7 +170,14 @@ public class Poligono {
         return b;
     }
 
-    public void recorerConvexo(PuntoPoligono p) {
+    //falta considerar el caso cuando los convexos son vacios !!!!
+    public void buscarYMIN(PuntoPoligono p) {
+        if (cardinalidad == 0) {
+            return;
+        }
+        if (cardinalidad == 1) {
+            return;
+        }
         PuntoPoligono iterador;
         PuntoPoligono minY;
         iterador = p;
@@ -125,27 +193,37 @@ public class Poligono {
         inicioBusqueda = minY;
     }
 
-    public void reverseOrder(ArrayList<PuntoPoligono> puntos) {
+    public void reverseOrder(ArrayList<PuntoPoligono> puntos, Color color1, Color color2) {
         PuntoPoligono p;
-        for (int i = puntos.size() - 1; i >= 0; i--) {
+        for (int i = puntos.size() - 1; i >= 0; i--) { //para recorrerlo el Array list en reversa
             p = puntos.get(i);
-            if (p.color.equals(Color.blue)) {
+            //if (p.color.equals(Color.blue)) {
+            if (p.color.equals(color1)) {
                 //eliminar punto
+                System.out.println("elimino punto");
                 eliminarPunto(p);
-            } else if (p.color.equals(Color.red)) {
-
+                //} else if (p.color.equals(Color.red)) {
+            } else if (p.color.equals(color2)) {
+                System.out.println("busco tangente");
                 if (cardinalidad == 1) {
                     tangente = inicioBusqueda;
-                    System.out.println("rojo " + p.x + " " + p.y);
+                    System.out.println(color2.toString() + p.x + " " + p.y);
                     System.out.println("tangente " + tangente.x + " " + tangente.y);
                     System.out.println("area " + (area2(referencia, p, tangente)) / 2);
+                    if (minimo == null || (area2(referencia, p, tangente)) / 2 < minimo.area) {
+                        minimo = new Triangulo(referencia, p, tangente, (area2(referencia, p, tangente)) / 2);
+                    }
                 } else if (cardinalidad == 0) {
+                    System.out.println("no busco nada");
 
                 } else {
                     buscarTangente(p);
-                    System.out.println("rojo " + p.x + " " + p.y);
+                    System.out.println(color2.toString() + p.x + " " + p.y);
                     System.out.println("tangente " + tangente.x + " " + tangente.y);
                     System.out.println("area " + (area2(referencia, p, tangente)) / 2);
+                    if (minimo == null || (area2(referencia, p, tangente)) / 2 < minimo.area) {
+                        minimo = new Triangulo(referencia, p, tangente, (area2(referencia, p, tangente)) / 2);
+                    }
                 }
 
             }
@@ -219,6 +297,70 @@ public class Poligono {
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.blue, -2, 4));
         return puntos;
     }
+
+    /**
+     * metodo para el casteo de los puntos Point2D a PuntoPoligono
+     *
+     * @param linea
+     * @return
+     */
+    public ArrayList<PuntoPoligono> convertirPuntos(Linea linea) {
+        ArrayList<PuntoPoligono> puntos = new ArrayList<PuntoPoligono>();
+        for (Point2D point2D : linea.puntoPrimal.orden) {
+            PuntoPoligono puntoP = (PuntoPoligono) point2D;
+            puntoP.prev = null;
+            puntoP.next = new Stack<PuntoPoligono>();
+            if (point2D.color != linea.puntoPrimal.color) {
+                puntos.add(puntoP);
+            }
+        }
+        return puntos;
+    }
+
+    /**
+     * Genera las permutaciones
+     *
+     * @param arr
+     */
+    public void permute(Color[] arr) {
+        permuteHelper(arr, 0);
+    }
+
+    private void permuteHelper(Color[] arr, int index) {
+        if (index >= arr.length - 1) { //If we are at the last element - nothing left to permute
+            //System.out.println(Arrays.toString(arr));
+            //Print the array
+            ArrayList elementosPermutacion = new ArrayList();
+            System.out.print("[");
+            for (int i = 0; i < arr.length - 1; i++) {
+                elementosPermutacion.add(arr[i]);
+                System.out.print(arr[i] + ", ");
+            }
+            if (arr.length > 0) {
+                elementosPermutacion.add(arr[arr.length - 1]);
+                System.out.print(arr[arr.length - 1]);
+            }
+            System.out.println("]");
+            permutaciones.add(elementosPermutacion);
+            return;
+        }
+
+        for (int i = index; i < arr.length; i++) { //For each index in the sub array arr[index...end]
+
+            //Swap the elements at indices index and i
+            Color t = arr[index];
+            arr[index] = arr[i];
+            arr[i] = t;
+
+            //Recurse on the sub array arr[index+1...end]
+            permuteHelper(arr, index + 1);
+
+            //Swap the elements back
+            t = arr[index];
+            arr[index] = arr[i];
+            arr[i] = t;
+        }
+    }
 }
 
 /**
@@ -231,12 +373,16 @@ class PuntoPoligono extends Point2D {
     //PuntoPoligono next;
     PuntoPoligono prev;
     Stack<PuntoPoligono> next;
-    Color color;
+    //Color color;
 //    Stack<PuntoPoligono> next;
 //    Stack<PuntoPoligono> prev;
 
     public PuntoPoligono(float x, float y) {
         super(x, y);
+    }
+
+    public PuntoPoligono(float x, float y, Color color) {
+        super(x, y, color);
     }
 
     public PuntoPoligono(PuntoPoligono prev, Stack<PuntoPoligono> next, Color color, float x, float y) {

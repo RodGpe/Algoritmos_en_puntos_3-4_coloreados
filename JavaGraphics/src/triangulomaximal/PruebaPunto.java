@@ -13,13 +13,13 @@ import java.awt.Color;
  */
 public class PruebaPunto {
     public static void main(String[] args) {
-        PuntoP puntoP = new PuntoH(0, 0);
+        PuntoP puntoP = new PuntoP(0, 0);
         PuntoH puntoH = new PuntoH(0, 0);
         puntoP = (PuntoP) puntoH.regresarPuntoP(puntoP);
         
-        puntoH = (PuntoH) puntoP;
+        //puntoH = (PuntoH) puntoP;
         System.out.println(puntoH.color);
-        System.out.println(puntoH.getClass().getName());
+        System.out.println(puntoP.getClass().getName());
         puntoP = new PuntoP(20, 20);
         System.out.println(puntoP.getClass().getName());
     }
