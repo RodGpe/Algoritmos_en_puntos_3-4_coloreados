@@ -30,13 +30,14 @@ class CvArregloLineas extends Canvas {
     ArrayList<HalfEdge> orden = new ArrayList<>();
     ArrayList<HalfEdge> primeras = new ArrayList<HalfEdge>();
     Triangulo minTri = null;
+    Triangulo maxTri = null;
 
     CvArregloLineas() {
         addMouseListener(new MouseAdapter() {
             Vector<Point2D> puntosPrimales = generarPuntosAleatorios();
             //puntosPrimales = generarPuntos();
             //puntosPrimales  = generarPuntosAleatorios();
-            //puntosPrimales = generarPuntosPrueba2();
+            //Vector<Point2D> puntosPrimales = generarPuntosPrueba2();
 
             public void mousePressed(MouseEvent evt) {
                 DCEList dcel = new DCEList();
@@ -119,6 +120,8 @@ class CvArregloLineas extends Canvas {
                 //pruebas = primeras;
                 //pruebas = conLinea; //para pintar una linea en segmentos 
                 Poligono poli = new Poligono();
+                PoligonoMax poliMax = new PoligonoMax();
+                maxTri = poliMax.buscarTrianguloMin(rectasDuales.get(0));
                 minTri = poli.buscarTrianguloMin(rectasDuales.get(0));
                 minTri = null;
                 for (Linea rectasDuale : rectasDuales) {
@@ -128,12 +131,28 @@ class CvArregloLineas extends Canvas {
                     if (nuevoTriangulo != null) {
                         if (minTri == null) {
                             minTri = nuevoTriangulo;
-                        }else{
+                        } else {
                             if (nuevoTriangulo.area < minTri.area) {
                                 minTri = nuevoTriangulo;
                             }
                         }
-                        
+
+                    }
+                }
+                maxTri = null;
+                for (Linea rectasDuale : rectasDuales) {
+                    Triangulo nuevoTriangulo;
+                    PoligonoMax poligono = new PoligonoMax();
+                    nuevoTriangulo = poligono.buscarTrianguloMin(rectasDuale);
+                    if (nuevoTriangulo != null) {
+                        if (maxTri == null) {
+                            maxTri = nuevoTriangulo;
+                        } else {
+                            if (nuevoTriangulo.area > maxTri.area) {
+                                maxTri = nuevoTriangulo;
+                            }
+                        }
+
                     }
                 }
                 pruebas = edgeList;
@@ -196,7 +215,6 @@ class CvArregloLineas extends Canvas {
 //            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
 //            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
 //        }
-
         //---------------------codigo para dibujar los puntos---------------------------
         int i = 0;
         for (Point2D a : v) {
@@ -235,6 +253,17 @@ class CvArregloLineas extends Canvas {
             g2d.drawLine(iX(minTri.b.x), iY(minTri.b.y), iX(minTri.c.x), iY(minTri.c.y));
             g.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
             g2d.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
+        }
+
+        g.setColor(Color.MAGENTA);
+        g2d.setColor(Color.white);
+        if (maxTri != null) {
+            g.drawLine(iX(maxTri.a.x), iY(maxTri.a.y), iX(maxTri.b.x), iY(maxTri.b.y));
+            g2d.drawLine(iX(maxTri.a.x), iY(maxTri.a.y), iX(maxTri.b.x), iY(maxTri.b.y));
+            g.drawLine(iX(maxTri.b.x), iY(maxTri.b.y), iX(maxTri.c.x), iY(maxTri.c.y));
+            g2d.drawLine(iX(maxTri.b.x), iY(maxTri.b.y), iX(maxTri.c.x), iY(maxTri.c.y));
+            g.drawLine(iX(maxTri.c.x), iY(maxTri.c.y), iX(maxTri.a.x), iY(maxTri.a.y));
+            g2d.drawLine(iX(maxTri.c.x), iY(maxTri.c.y), iX(maxTri.a.x), iY(maxTri.a.y));
         }
         //para exportar imagen
         g2d.dispose();

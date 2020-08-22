@@ -210,15 +210,13 @@ public class Poligono {
                 eliminarPunto(p);
                 //} else if (p.color.equals(Color.red)) {
             } else if (p.color.equals(color2)) {
-                System.out.println("busco tangente");
+                //System.out.println("busco tangente");
                 if (cardinalidad == 1) {
                     tangente = inicioBusqueda;
                     System.out.println(color2.toString() + p.x + " " + p.y);
                     System.out.println("tangente " + tangente.x + " " + tangente.y);
                     System.out.println("area " + (area2(referencia, p, tangente)) / 2);
-                    if (minimo == null || (area2(referencia, p, tangente)) / 2 < minimo.area) {
-                        minimo = new Triangulo(referencia, p, tangente, (area2(referencia, p, tangente)) / 2);
-                    }
+                    verificarTamano(p);
                 } else if (cardinalidad == 0) {
                     System.out.println("no busco nada");
 
@@ -227,12 +225,16 @@ public class Poligono {
                     System.out.println(color2.toString() + p.x + " " + p.y);
                     System.out.println("tangente " + tangente.x + " " + tangente.y);
                     System.out.println("area " + (area2(referencia, p, tangente)) / 2);
-                    if (minimo == null || (area2(referencia, p, tangente)) / 2 < minimo.area) {
-                        minimo = new Triangulo(referencia, p, tangente, (area2(referencia, p, tangente)) / 2);
-                    }
+                    verificarTamano(p);
                 }
 
             }
+        }
+    }
+
+    public void verificarTamano(PuntoPoligono p) {
+        if (minimo == null || (area2(referencia, p, tangente)) / 2 < minimo.area) {
+            minimo = new Triangulo(referencia, p, tangente, (area2(referencia, p, tangente)) / 2);
         }
     }
 
@@ -306,7 +308,8 @@ public class Poligono {
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.blue, -2, 4));
         return puntos;
     }
-        public ArrayList crearOrden2() {
+
+    public ArrayList crearOrden2() {
         ArrayList<PuntoPoligono> puntos = new ArrayList<PuntoPoligono>();
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.red, 3, 5));
         puntos.add(new PuntoPoligono(null, new Stack<PuntoPoligono>(), Color.green, 5, 4));
