@@ -9,7 +9,7 @@ package triangulomaximal;
  *
  * @author Rodrigo
  */
-public class PoligonoMax extends Poligono {
+public class PoligonoMax extends BuscadorTriangulo {
 
     public static void main(String[] args) {
         PoligonoMax poliM = new PoligonoMax();

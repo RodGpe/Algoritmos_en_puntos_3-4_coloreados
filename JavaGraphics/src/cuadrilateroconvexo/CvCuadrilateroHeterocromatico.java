@@ -1,6 +1,10 @@
-package triangulomaximal;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package cuadrilateroconvexo;
 
-import javagraphics.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -11,7 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-class CvArregloLineas extends Canvas {
+/**
+ *
+ * @author Rodrigo
+ */
+public class CvCuadrilateroHeterocromatico extends Canvas {
 
     Vector<Point2D> v = new Vector<Point2D>();
     Vector<Point2D> vBlue = new Vector<Point2D>();
@@ -19,8 +27,8 @@ class CvArregloLineas extends Canvas {
     float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
     int centerX, centerY;
-    int numerodePuntos = 12;
-    float separacionMinima = .5f;
+    int numerodePuntos = 20;
+    float separacionMinima = .3f;
     // declaro como variable de clase todo lo que su use para pintar
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
     ArrayList<HalfEdge> edgeList = new ArrayList<HalfEdge>();
@@ -29,15 +37,15 @@ class CvArregloLineas extends Canvas {
     ArrayList<Linea> rectasDuales = new ArrayList<>();
     ArrayList<HalfEdge> orden = new ArrayList<>();
     ArrayList<HalfEdge> primeras = new ArrayList<HalfEdge>();
-    Triangulo minTri = null;
-    Triangulo maxTri = null;
+    Cuadrilatero convexo = null;
+    //Triangulo maxTri = null;
 
-    CvArregloLineas() {
+    CvCuadrilateroHeterocromatico() {
         addMouseListener(new MouseAdapter() {
             Vector<Point2D> puntosPrimales = generarPuntosAleatorios();
             //puntosPrimales = generarPuntos();
-            //puntosPrimales  = generarPuntosAleatorios();
             //Vector<Point2D> puntosPrimales = generarPuntosPrueba2();
+            //Vector<Point2D> puntosPrimales = generarPuntosPrueba();
 
             public void mousePressed(MouseEvent evt) {
                 DCEList dcel = new DCEList();
@@ -114,47 +122,20 @@ class CvArregloLineas extends Canvas {
                     System.out.println("v.add(new Point2D(" + rectasDuale.puntoPrimal.x + "f, " + rectasDuale.puntoPrimal.y + "f));");
                 }
                 crearOrdenArribaPunto(rectasDuales, faceList.get(1), dcel);
+                for (Linea rectasDuale : rectasDuales) {
+                    BuscadorCuadrilatero buscador = new BuscadorCuadrilatero();
+                    convexo = buscador.buscarCuadrilatero(rectasDuale);
+                    if (convexo != null) {
+                        break;
+                    }
+                }
+                //BuscadorCuadrilatero buscador = new BuscadorCuadrilatero();
+                //convexo = buscador.buscarCuadrilatero(rectasDuales.get(0));
                 //dcel.imprimirLista(edgeList);
                 //orden = dcel.obtenerOrden(primeras.get(0), faceList.get(1));
                 //pruebas = segmentosLinea; //para pintar una linea en segmentos 
                 //pruebas = primeras;
                 //pruebas = conLinea; //para pintar una linea en segmentos 
-                BuscadorTriangulo poli = new BuscadorTriangulo();
-                PoligonoMax poliMax = new PoligonoMax();
-                maxTri = poliMax.buscarTrianguloMin(rectasDuales.get(0));
-                minTri = poli.buscarTrianguloMin(rectasDuales.get(0));
-                minTri = null;
-                for (Linea rectasDuale : rectasDuales) {
-                    Triangulo nuevoTriangulo;
-                    BuscadorTriangulo poligono = new BuscadorTriangulo();
-                    nuevoTriangulo = poligono.buscarTrianguloMin(rectasDuale);
-                    if (nuevoTriangulo != null) {
-                        if (minTri == null) {
-                            minTri = nuevoTriangulo;
-                        } else {
-                            if (nuevoTriangulo.area < minTri.area) {
-                                minTri = nuevoTriangulo;
-                            }
-                        }
-
-                    }
-                }
-                maxTri = null;
-                for (Linea rectasDuale : rectasDuales) {
-                    Triangulo nuevoTriangulo;
-                    PoligonoMax poligono = new PoligonoMax();
-                    nuevoTriangulo = poligono.buscarTrianguloMin(rectasDuale);
-                    if (nuevoTriangulo != null) {
-                        if (maxTri == null) {
-                            maxTri = nuevoTriangulo;
-                        } else {
-                            if (nuevoTriangulo.area > maxTri.area) {
-                                maxTri = nuevoTriangulo;
-                            }
-                        }
-
-                    }
-                }
                 pruebas = edgeList;
                 repaint();
             }
@@ -223,6 +204,7 @@ class CvArregloLineas extends Canvas {
             g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
             g2d.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
             g.drawString("" + (++i), iX(a.x), iY(a.y));
+            g.drawString("" + a.x + ", " + a.y, iX(a.x), iY(a.y - 0.15f));
         }
 //        //---------codigo para dibujar un orden------------------------------------------
 //        for (HalfEdge halfEdge : orden) {
@@ -243,27 +225,12 @@ class CvArregloLineas extends Canvas {
 //                g.drawString("" + (++i), iX(point2D.x), iY(point2D.y));
 //            }
 //        }
-        //para dibujar triangulo
-        g.setColor(Color.black);
-        g2d.setColor(Color.white);
-        if (minTri != null) {
-            g.drawLine(iX(minTri.a.x), iY(minTri.a.y), iX(minTri.b.x), iY(minTri.b.y));
-            g2d.drawLine(iX(minTri.a.x), iY(minTri.a.y), iX(minTri.b.x), iY(minTri.b.y));
-            g.drawLine(iX(minTri.b.x), iY(minTri.b.y), iX(minTri.c.x), iY(minTri.c.y));
-            g2d.drawLine(iX(minTri.b.x), iY(minTri.b.y), iX(minTri.c.x), iY(minTri.c.y));
-            g.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
-            g2d.drawLine(iX(minTri.c.x), iY(minTri.c.y), iX(minTri.a.x), iY(minTri.a.y));
-        }
-
-        g.setColor(Color.MAGENTA);
-        g2d.setColor(Color.white);
-        if (maxTri != null) {
-            g.drawLine(iX(maxTri.a.x), iY(maxTri.a.y), iX(maxTri.b.x), iY(maxTri.b.y));
-            g2d.drawLine(iX(maxTri.a.x), iY(maxTri.a.y), iX(maxTri.b.x), iY(maxTri.b.y));
-            g.drawLine(iX(maxTri.b.x), iY(maxTri.b.y), iX(maxTri.c.x), iY(maxTri.c.y));
-            g2d.drawLine(iX(maxTri.b.x), iY(maxTri.b.y), iX(maxTri.c.x), iY(maxTri.c.y));
-            g.drawLine(iX(maxTri.c.x), iY(maxTri.c.y), iX(maxTri.a.x), iY(maxTri.a.y));
-            g2d.drawLine(iX(maxTri.c.x), iY(maxTri.c.y), iX(maxTri.a.x), iY(maxTri.a.y));
+        if (convexo != null) {
+            g.setColor(Color.black);
+            g.drawLine(iX(convexo.a.x), iY(convexo.a.y), iX(convexo.b.x), iY(convexo.b.y));
+            g.drawLine(iX(convexo.b.x), iY(convexo.b.y), iX(convexo.c.x), iY(convexo.c.y));
+            g.drawLine(iX(convexo.c.x), iY(convexo.c.y), iX(convexo.d.x), iY(convexo.d.y));
+            g.drawLine(iX(convexo.d.x), iY(convexo.d.y), iX(convexo.a.x), iY(convexo.a.y));
         }
         //para exportar imagen
         g2d.dispose();
@@ -271,7 +238,7 @@ class CvArregloLineas extends Canvas {
         try {
             ImageIO.write(bufferedImage, "png", file);
         } catch (IOException ex) {
-            Logger.getLogger(CvArregloLineas.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CvCuadrilateroHeterocromatico.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -337,7 +304,8 @@ class CvArregloLineas extends Canvas {
         Random r;//= new Random();
         int maxAlto = 10;
         int maxAncho = 10;
-        Color colores[] = {Color.RED, Color.BLUE, Color.GREEN};
+        Color colores[] = {Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA};
+        String colorNombres[] = {"RED", "BLUE", "GREEN", "MAGENTA"};
         int contadorColor = 0;
         for (int i = 0; i < numerodePuntos; i++) {
             float minY = (-(maxAlto / 2)) + .1f;
@@ -359,8 +327,9 @@ class CvArregloLineas extends Canvas {
                 randomRedY = minY + r.nextFloat() * (maxY - minY);
                 aVerificarRed = new Point2D(randomRedX, randomRedY);
             }
-            v.add((Point2D) new PuntoPoligono(randomRedX, randomRedY, colores[contadorColor]));
-            contadorColor = (contadorColor + 1) % 3;
+            v.add((Point2D) new PuntoInfoConvex(randomRedX, randomRedY, colores[contadorColor]));
+            System.out.println("v.add(new PuntoInfoConvex(" + randomRedX + "f, " + randomRedY + "f, Color." + colorNombres[contadorColor] + "));");
+            contadorColor = (contadorColor + 1) % 4;
         }
         return v;
     }
@@ -377,35 +346,38 @@ class CvArregloLineas extends Canvas {
     //para generar puntos de prueba
     public Vector generarPuntosPrueba() {
         v = new Vector<Point2D>();
-        v.add(new Point2D(4.093657f, -3.7574651f));
-        v.add(new Point2D(2.2738342f, 3.3094459f));
-        v.add(new Point2D(-3.2783852f, 3.855044f));
-        v.add(new Point2D(-2.664117f, 1.297091f));
-        v.add(new Point2D(1.0673037f, -2.8855095f));
-        v.add(new Point2D(2.8079023f, -0.43232393f));
-        v.add(new Point2D(0.4696145f, -1.491689f));
-        v.add(new Point2D(-4.5517263f, 2.2202463f));
-        v.add(new Point2D(-0.78973055f, -4.7208543f));
-        v.add(new Point2D(3.3992982f, 4.780603f));
-        v.add(new Point2D(-0.20737553f, 0.5037036f));
-        v.add(new Point2D(-3.9037566f, -2.3219142f));
+        v.add(new PuntoInfoConvex(0.7989087f, -4.519482f, Color.RED));
+        v.add(new PuntoInfoConvex(-2.6131446f, -2.2262723f, Color.BLUE));
+        v.add(new PuntoInfoConvex(2.491004f, 4.7578692f, Color.GREEN));
+        v.add(new PuntoInfoConvex(4.1843505f, 4.2496896f, Color.MAGENTA));
+        v.add(new PuntoInfoConvex(-1.6984735f, -0.81643057f, Color.RED));
+        v.add(new PuntoInfoConvex(3.4806323f, -3.7542093f, Color.BLUE));
+        v.add(new PuntoInfoConvex(-0.8736181f, -1.3583307f, Color.GREEN));
         return v;
     }
 
     public Vector generarPuntosPrueba2() {
         v = new Vector<Point2D>();
-        v.add((Point2D) new PuntoPoligono(-0.974509f, -1.0474205f, Color.GREEN));
-        v.add((Point2D) new PuntoPoligono(-3.6944203f, 4.2643304f, Color.RED));
-        v.add((Point2D) new PuntoPoligono(-4.209582f, 3.082199f, Color.RED));
-        v.add((Point2D) new PuntoPoligono(2.373415f, -3.5292802f, Color.BLUE));
-        v.add((Point2D) new PuntoPoligono(-0.08396673f, 0.8875327f, Color.RED));
-        v.add((Point2D) new PuntoPoligono(-2.2308152f, -1.8010471f, Color.BLUE));
-        v.add((Point2D) new PuntoPoligono(4.748339f, -2.4762938f, Color.RED));
-        v.add((Point2D) new PuntoPoligono(1.7718267f, 0.06327295f, Color.RED));
-        v.add((Point2D) new PuntoPoligono(3.5944953f, 1.8263621f, Color.RED));
-        v.add((Point2D) new PuntoPoligono(0.6526103f, -4.4022f, Color.BLUE));
-        v.add((Point2D) new PuntoPoligono(4.2021174f, 2.3445287f, Color.BLUE));
-        v.add((Point2D) new PuntoPoligono(-2.7426038f, 3.6003747f, Color.BLUE));
+        v.add(new PuntoInfoConvex(1.0100832f, 2.0563736f, Color.RED));
+        v.add(new PuntoInfoConvex(-0.40971518f, 1.1040325f, Color.BLUE));
+        v.add(new PuntoInfoConvex(-1.1970303f, -1.5875645f, Color.GREEN));
+        v.add(new PuntoInfoConvex(2.152998f, -4.0094705f, Color.MAGENTA));
+        v.add(new PuntoInfoConvex(-4.659032f, 3.7127852f, Color.RED));
+        v.add(new PuntoInfoConvex(-2.6035485f, 2.5543113f, Color.BLUE));
+        v.add(new PuntoInfoConvex(4.136249f, -2.6855154f, Color.GREEN));
+        v.add(new PuntoInfoConvex(-1.9709132f, -4.649574f, Color.MAGENTA));
+        v.add(new PuntoInfoConvex(4.7325454f, 0.0496006f, Color.RED));
+        v.add(new PuntoInfoConvex(3.745113f, 4.6667657f, Color.BLUE));
+        v.add(new PuntoInfoConvex(-3.7043512f, 4.232654f, Color.GREEN));
+        v.add(new PuntoInfoConvex(0.5438423f, 0.62672806f, Color.MAGENTA));
+        v.add(new PuntoInfoConvex(-3.1426024f, -3.3308673f, Color.RED));
+        v.add(new PuntoInfoConvex(1.796442f, 3.2631955f, Color.BLUE));
+        v.add(new PuntoInfoConvex(-0.71518946f, -0.48085928f, Color.GREEN));
+        v.add(new PuntoInfoConvex(-4.1891556f, -0.88019705f, Color.MAGENTA));
+        v.add(new PuntoInfoConvex(1.3639722f, 1.6796937f, Color.RED));
+        v.add(new PuntoInfoConvex(2.5713015f, -2.0676157f, Color.BLUE));
+        v.add(new PuntoInfoConvex(2.968696f, -2.9912982f, Color.GREEN));
+        v.add(new PuntoInfoConvex(0.024520397f, -1.2112391f, Color.MAGENTA));
         return v;
     }
 

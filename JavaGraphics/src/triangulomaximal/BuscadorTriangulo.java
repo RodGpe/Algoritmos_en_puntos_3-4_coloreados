@@ -14,7 +14,7 @@ import java.util.Stack;
  *
  * @author Rodrigo
  */
-public class Poligono {
+public class BuscadorTriangulo {
 
     int cardinalidad;
     PuntoPoligono ultimoInsertado;
@@ -28,7 +28,7 @@ public class Poligono {
     Triangulo minimo = null;
 
     public static void main(String[] args) {
-        Poligono poli = new Poligono();
+        BuscadorTriangulo poli = new BuscadorTriangulo();
 //        poli.permute(poli.coloresDisponibles);
 //        System.out.println("------");
 //        System.out.println("------");
@@ -62,7 +62,8 @@ public class Poligono {
     public Triangulo buscarTrianguloMin(Linea linea) {
         referencia = (PuntoPoligono) linea.puntoPrimal;
         eliminarColor(linea);
-        permute(new Color[]{coloresUtiles.get(0), coloresUtiles.get(1)}); // las guarda en el atributo de clase permutaciones
+        PermutadorColores permutador = new PermutadorColores();
+        permutaciones = permutador.permute(new Color[]{coloresUtiles.get(0), coloresUtiles.get(1)}); // las guarda en el atributo de clase permutaciones
         ArrayList<PuntoPoligono> ordenPoli = convertirPuntos(linea);
         for (ArrayList<Color> permutacione : permutaciones) { //para buscar en todas las permutaciones de colres
             Color color1 = permutacione.get(0);
@@ -152,12 +153,12 @@ public class Poligono {
         return area2;
     }
 
-    public PuntoPoligono buscarPrev(PuntoPoligono p) {
+    public PuntoPoligono buscarPrev(PuntoPoligono p) { 
         PuntoPoligono a, b, c;
         a = p;
         b = ultimoInsertado;
         c = ultimoInsertado.prev;
-        while (area2(a, b, c) > 0) {
+        while (area2(a, b, c) > 0) { //mientras el giro sea a la izquierda
             b = c;
             c = c.prev;
         }
@@ -169,7 +170,7 @@ public class Poligono {
         a = p;
         b = ultimoInsertado;
         c = ultimoInsertado.next.peek();
-        while (area2(a, b, c) < 0) {
+        while (area2(a, b, c) < 0) { //mientras el giro sea
             b = c;
             c = c.next.peek();
         }
@@ -336,50 +337,6 @@ public class Poligono {
         return puntos;
     }
 
-    /**
-     * Genera las permutaciones
-     *
-     * @param arr
-     */
-    public void permute(Color[] arr) {
-        permuteHelper(arr, 0);
-    }
-
-    private void permuteHelper(Color[] arr, int index) {
-        if (index >= arr.length - 1) { //If we are at the last element - nothing left to permute
-            //System.out.println(Arrays.toString(arr));
-            //Print the array
-            ArrayList elementosPermutacion = new ArrayList();
-            System.out.print("[");
-            for (int i = 0; i < arr.length - 1; i++) {
-                elementosPermutacion.add(arr[i]);
-                System.out.print(arr[i] + ", ");
-            }
-            if (arr.length > 0) {
-                elementosPermutacion.add(arr[arr.length - 1]);
-                System.out.print(arr[arr.length - 1]);
-            }
-            System.out.println("]");
-            permutaciones.add(elementosPermutacion);
-            return;
-        }
-
-        for (int i = index; i < arr.length; i++) { //For each index in the sub array arr[index...end]
-
-            //Swap the elements at indices index and i
-            Color t = arr[index];
-            arr[index] = arr[i];
-            arr[i] = t;
-
-            //Recurse on the sub array arr[index+1...end]
-            permuteHelper(arr, index + 1);
-
-            //Swap the elements back
-            t = arr[index];
-            arr[index] = arr[i];
-            arr[i] = t;
-        }
-    }
 }
 
 /**
