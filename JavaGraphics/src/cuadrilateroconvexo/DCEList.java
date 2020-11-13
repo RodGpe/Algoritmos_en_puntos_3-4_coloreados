@@ -516,6 +516,13 @@ public class DCEList {
         return segmentos;
     }
 
+    /**
+     * 
+     * @param primera Es la primer HalfEdge de una linea, dual del punto respeto al cual se obtiene el orden,
+     * que interseca a la bounding box
+     * @param unbounded Es la cara no acotada
+     * @return Una lista de HalfEdges que representa el orden angular respecto al punto primal
+     */
     public ArrayList<HalfEdge> obtenerOrden(HalfEdge primera, Face unbounded) {
         ArrayList<HalfEdge> segmentos = new ArrayList<HalfEdge>();
         ArrayList<HalfEdge> orden = new ArrayList<HalfEdge>();

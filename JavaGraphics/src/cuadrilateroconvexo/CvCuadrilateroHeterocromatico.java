@@ -27,7 +27,7 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
     float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
     int centerX, centerY;
-    int numerodePuntos = 20;
+    int numerodePuntos = 20; //20
     float separacionMinima = .3f;
     // declaro como variable de clase todo lo que su use para pintar
     ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
@@ -71,7 +71,7 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
                         }
                     }
                 }
-                float extD = 0, extI = 0, extS = 0, extIn = 0;
+                float extD = 0, extI = 0, extS = 0, extIn = 0; //variables que definiran la bounding box
                 for (Point2D interseccione : intersecciones) {
                     if (Math.abs(interseccione.x) > extD) {
                         extD = Math.abs(interseccione.x);
@@ -96,9 +96,9 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
                 //rWidth = 102;
                 //rHeight = 102;
                 //dcel.crearBoundingBox(50, -50, 50, -50, edgeList, vertexList, faceList);
-                dcel.crearBoundingBox(extD, extI, extS, extIn, edgeList, vertexList, faceList);
+                dcel.crearBoundingBox(extD, extI, extS, extIn, edgeList, vertexList, faceList); //se crea el bounding box
 
-                rectasDuales = transformarPuntosaRectas(puntosPrimales);
+                rectasDuales = transformarPuntosaRectas(puntosPrimales); //se crean las rectas duales de los puntos
                 //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba());
                 //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba2());
                 //rectasDuales = transformarPuntosaRectas(generarPuntos());
@@ -106,26 +106,26 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //                rWidth = 192;
 //                rHeight = 192;
 //                dcel.crearBoundingBox(90, -90, 90, -90, edgeList, vertexList, faceList);
-                for (Linea dual : rectasDuales) {
+                for (Linea dual : rectasDuales) { //se agrega una por una cada recta dual al arreglo de lineas
                     dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
                     //primeras.add(new HalfEdge(dual.primerArista.origin, dual.primerArista.next, dual.primerArista.prev, dual.primerArista.twin, dual.primerArista.face));
                     //primeras.add(dual.primerArista);
                 }
                 //este for debe ir despues porque el dual.arista se puede actualizar por cada linea agregada
-                for (Linea dual : rectasDuales) {
+                for (Linea dual : rectasDuales) { //se obtiene de cada recta dual la primer arista que interseca la bounding box
                     primeras.add(dual.primerArista);
                 }
 //                ArrayList<HalfEdge> segmentosLinea = new ArrayList<>();
 //                segmentosLinea = dcel.recorrerLinea(primeras.get(1), faceList.get(1));
 
-                for (Linea rectasDuale : rectasDuales) {
+                for (Linea rectasDuale : rectasDuales) { //imprime en terminal los puntos generados aleatoriamente
                     System.out.println("v.add(new Point2D(" + rectasDuale.puntoPrimal.x + "f, " + rectasDuale.puntoPrimal.y + "f));");
                 }
                 crearOrdenArribaPunto(rectasDuales, faceList.get(1), dcel);
                 for (Linea rectasDuale : rectasDuales) {
-                    BuscadorCuadrilatero buscador = new BuscadorCuadrilatero();
+                    BuscadorCuadrilatero buscador = new BuscadorCuadrilatero(); //instancia de la clase buscadorCuadrilatero
                     convexo = buscador.buscarCuadrilatero(rectasDuale);
-                    if (convexo != null) {
+                    if (convexo != null) { //si se encontro un convexo el algoritmo se detiene
                         break;
                     }
                 }
@@ -179,16 +179,21 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //        for (Linea recta : rectasDuales) {
 //            g.drawLine(iX(recta.origin.x), iY(recta.origin.y), iX(recta.twin.origin.x), iY(recta.twin.origin.y));
 //        }
-        //-------------------codigo para dibujar aristas--------------------
-//        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-//        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-//        for (HalfEdge next : pruebas) {
-//            //for (HalfEdge next : edgeList) {
-//            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-//            //g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-//            g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-//            //g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-//        }
+        //-------------------codigo para dibujar todas medias aristas--------------------
+        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+        for (HalfEdge next : pruebas) {
+            //for (HalfEdge next : edgeList) {
+            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+//            if(next.line != null){
+//                g.setColor(next.line.puntoPrimal.color);
+//            }else{
+//                g.setColor(Color.black);
+//            }
+            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+            g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+        }
         //---------------codigo para dibujar la primeras en el .png----------------------------------
 //        int k = 0;
 //        for (HalfEdge next : primeras) {
@@ -197,15 +202,15 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
 //        }
         //---------------------codigo para dibujar los puntos---------------------------
-        int i = 0;
-        for (Point2D a : v) {
-            g.setColor(a.color);
-            g2d.setColor(a.color);
-            g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-            g2d.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-            g.drawString("" + (++i), iX(a.x), iY(a.y));
-            g.drawString("" + a.x + ", " + a.y, iX(a.x), iY(a.y - 0.15f));
-        }
+//        int i = 0;
+//        for (Point2D a : v) {
+//            g.setColor(a.color);
+//            g2d.setColor(a.color);
+//            g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+//            g2d.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+//            g.drawString("" + (++i), iX(a.x), iY(a.y)); //dibuja el contador de puntos
+//            g.drawString("" + a.x + ", " + a.y, iX(a.x), iY(a.y - 0.15f)); //dibuja las coordenadas del punto
+//        }
 //        //---------codigo para dibujar un orden------------------------------------------
 //        for (HalfEdge halfEdge : orden) {
 //            Point2D puntoRef = primeras.get(0).line.puntoPrimal;
@@ -215,7 +220,8 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //            g.drawString("" + (++i), iX(halfEdge.line.puntoPrimal.x), iY(halfEdge.line.puntoPrimal.y));
 //        }
 
-        //nuevo codigo para dibujar el orden de un punto
+//        //--------nuevo codigo para dibujar el orden de un punto---------
+//        int i = 0;
 //        if (!rectasDuales.isEmpty()) {
 //            for (Point2D point2D : rectasDuales.get(0).puntoPrimal.orden) {
 //                Point2D puntoRef = rectasDuales.get(0).puntoPrimal;
@@ -225,14 +231,16 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //                g.drawString("" + (++i), iX(point2D.x), iY(point2D.y));
 //            }
 //        }
-        if (convexo != null) {
-            g.setColor(Color.black);
-            g.drawLine(iX(convexo.a.x), iY(convexo.a.y), iX(convexo.b.x), iY(convexo.b.y));
-            g.drawLine(iX(convexo.b.x), iY(convexo.b.y), iX(convexo.c.x), iY(convexo.c.y));
-            g.drawLine(iX(convexo.c.x), iY(convexo.c.y), iX(convexo.d.x), iY(convexo.d.y));
-            g.drawLine(iX(convexo.d.x), iY(convexo.d.y), iX(convexo.a.x), iY(convexo.a.y));
-        }
-        //para exportar imagen
+
+        // -------------codigo para dibujar el heterocromático convexo si existe----------
+//        if (convexo != null) {
+//            g.setColor(Color.black);
+//            g.drawLine(iX(convexo.a.x), iY(convexo.a.y), iX(convexo.b.x), iY(convexo.b.y));
+//            g.drawLine(iX(convexo.b.x), iY(convexo.b.y), iX(convexo.c.x), iY(convexo.c.y));
+//            g.drawLine(iX(convexo.c.x), iY(convexo.c.y), iX(convexo.d.x), iY(convexo.d.y));
+//            g.drawLine(iX(convexo.d.x), iY(convexo.d.y), iX(convexo.a.x), iY(convexo.a.y));
+//        }
+        //------------para exportar imagen------------
         g2d.dispose();
         File file = new File("myimage.png");
         try {
@@ -241,7 +249,7 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
             Logger.getLogger(CvCuadrilateroHeterocromatico.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    //función que verifica que no haya 2 puntos con la misma coordenada x o misma coordenada y
     public boolean verificarAlineacion(Vector<Point2D> v, Point2D a) {
         for (int i = 0; i <= v.size() - 1; i++) { //primero comparamos cooredanas X de Red
             //System.out.print("Punto " + i + " :  ");
@@ -263,7 +271,12 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
         }
         return false;
     }
-
+    /**
+     * Método que calcula el dual de un punto
+     * @param punto El punto primal
+     * @param g
+     * @return Un Linea
+     */
     public Linea calcularDual(Point2D punto, Graphics g) {
         float y1 = 0.0F;
         float y2 = 0.0F;
@@ -280,7 +293,13 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
         DCEList dcel = new DCEList();
         return dcel.crearLinea(x1, y1, x2, y2);
     }
-
+    /**
+     * Método que dados dos puntos calcula la intersección de sus duales
+     * @param punto1
+     * @param punto2
+     * @param g
+     * @return Un Point2D que representa la intersección
+     */
     public Point2D calcularInterseccionDual(Point2D punto1, Point2D punto2, Graphics g) {
         float y1 = 0.0F;
         float y2 = 0.0F;
@@ -333,7 +352,7 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
         }
         return v;
     }
-
+    //para generar puntos de prueba
     public Vector generarPuntos() {
         v = new Vector<Point2D>();
         v.add(new Point2D(1.5f, -3.34f));
@@ -355,7 +374,7 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
         v.add(new PuntoInfoConvex(-0.8736181f, -1.3583307f, Color.GREEN));
         return v;
     }
-
+    //para generar puntos de prueba
     public Vector generarPuntosPrueba2() {
         v = new Vector<Point2D>();
         v.add(new PuntoInfoConvex(1.0100832f, 2.0563736f, Color.RED));
@@ -380,13 +399,17 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
         v.add(new PuntoInfoConvex(0.024520397f, -1.2112391f, Color.MAGENTA));
         return v;
     }
-
+    /**
+     * Método que recibe un vector (colección) de puntos y regresa una lista de sus duales
+     * @param v es el vector de puntos
+     * @return una lista de las lineas duales de los puntos en v
+     */
     public ArrayList transformarPuntosaRectas(Vector<Point2D> v) {
         ArrayList<Linea> rectasDuales = new ArrayList<Linea>();
         for (Point2D punto : v) {
             //DCEList dcel = new DCEList();
             Linea auxiliar = this.calcularDual(punto, null);
-            auxiliar.puntoPrimal = punto;   //para que la linea a que punto pertenece
+            auxiliar.puntoPrimal = punto;   //para que sepa la linea a que punto pertenece
             punto.linea = auxiliar;         //para que sepa el punto a que linea se mapea
             rectasDuales.add(auxiliar);
         }
@@ -405,7 +428,7 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
         for (Linea linea : lineas) {
             //ArrayList<Point2D> ordenCompleto = new ArrayList<Point2D>();
             for (HalfEdge halfEdge : dcel.obtenerOrden(linea.primerArista, unbounded)) {
-                if (halfEdge.line.puntoPrimal.y >= linea.puntoPrimal.y) {
+                if (halfEdge.line.puntoPrimal.y >= linea.puntoPrimal.y) { //comparamos si el punto esta por encima en el primal
                     linea.puntoPrimal.orden.add(halfEdge.line.puntoPrimal);
                 }
             }
