@@ -492,7 +492,11 @@ public class DCEList {
         return primer;
     }
 
-    ;
+    /**
+     * Toma un HalfEdge de una linea y regresa la siguiente HalfEdge sobre la misma linea
+     * @param edge
+     * @return 
+     */
     public HalfEdge nextEdge(HalfEdge edge) {
         return edge.next.twin.next;
     }

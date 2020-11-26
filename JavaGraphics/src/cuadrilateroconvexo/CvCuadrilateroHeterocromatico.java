@@ -180,20 +180,20 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //            g.drawLine(iX(recta.origin.x), iY(recta.origin.y), iX(recta.twin.origin.x), iY(recta.twin.origin.y));
 //        }
         //-------------------codigo para dibujar todas medias aristas--------------------
-        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
-        for (HalfEdge next : pruebas) {
-            //for (HalfEdge next : edgeList) {
-            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-//            if(next.line != null){
-//                g.setColor(next.line.puntoPrimal.color);
-//            }else{
-//                g.setColor(Color.black);
-//            }
-            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
-            g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
-        }
+//        g.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+//        g2d.drawRect(left, top, right - left, bottom - top); //dibuja el rectangulo grandote
+//        for (HalfEdge next : pruebas) {
+//            //for (HalfEdge next : edgeList) {
+//            g.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+////            if(next.line != null){
+////                g.setColor(next.line.puntoPrimal.color);
+////            }else{
+////                g.setColor(Color.black);
+////            }
+//            g2d.setColor(Color.getHSBColor(next.origin.x, next.origin.y * 20, next.twin.origin.y * 30));
+//            g.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+//            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
+//        }
         //---------------codigo para dibujar la primeras en el .png----------------------------------
 //        int k = 0;
 //        for (HalfEdge next : primeras) {
@@ -202,15 +202,15 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //            g2d.drawLine(iX(next.origin.x), iY(next.origin.y), iX(next.twin.origin.x), iY(next.twin.origin.y));
 //        }
         //---------------------codigo para dibujar los puntos---------------------------
-//        int i = 0;
-//        for (Point2D a : v) {
-//            g.setColor(a.color);
-//            g2d.setColor(a.color);
-//            g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-//            g2d.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
-//            g.drawString("" + (++i), iX(a.x), iY(a.y)); //dibuja el contador de puntos
-//            g.drawString("" + a.x + ", " + a.y, iX(a.x), iY(a.y - 0.15f)); //dibuja las coordenadas del punto
-//        }
+        int i = 0;
+        for (Point2D a : v) {
+            g.setColor(a.color);
+            g2d.setColor(a.color);
+            g.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+            g2d.fillRect(iX(a.x) - 2, iY(a.y) - 2, 4, 4);
+            g.drawString("" + (++i), iX(a.x), iY(a.y)); //dibuja el contador de puntos
+            g.drawString("" + a.x + ", " + a.y, iX(a.x), iY(a.y - 0.15f)); //dibuja las coordenadas del punto
+        }
 //        //---------codigo para dibujar un orden------------------------------------------
 //        for (HalfEdge halfEdge : orden) {
 //            Point2D puntoRef = primeras.get(0).line.puntoPrimal;
@@ -233,13 +233,13 @@ public class CvCuadrilateroHeterocromatico extends Canvas {
 //        }
 
         // -------------codigo para dibujar el heterocromático convexo si existe----------
-//        if (convexo != null) {
-//            g.setColor(Color.black);
-//            g.drawLine(iX(convexo.a.x), iY(convexo.a.y), iX(convexo.b.x), iY(convexo.b.y));
-//            g.drawLine(iX(convexo.b.x), iY(convexo.b.y), iX(convexo.c.x), iY(convexo.c.y));
-//            g.drawLine(iX(convexo.c.x), iY(convexo.c.y), iX(convexo.d.x), iY(convexo.d.y));
-//            g.drawLine(iX(convexo.d.x), iY(convexo.d.y), iX(convexo.a.x), iY(convexo.a.y));
-//        }
+        if (convexo != null) {
+            g.setColor(Color.black);
+            g.drawLine(iX(convexo.a.x), iY(convexo.a.y), iX(convexo.b.x), iY(convexo.b.y));
+            g.drawLine(iX(convexo.b.x), iY(convexo.b.y), iX(convexo.c.x), iY(convexo.c.y));
+            g.drawLine(iX(convexo.c.x), iY(convexo.c.y), iX(convexo.d.x), iY(convexo.d.y));
+            g.drawLine(iX(convexo.d.x), iY(convexo.d.y), iX(convexo.a.x), iY(convexo.a.y));
+        }
         //------------para exportar imagen------------
         g2d.dispose();
         File file = new File("myimage.png");

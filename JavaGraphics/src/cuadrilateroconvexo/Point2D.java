@@ -5,7 +5,6 @@
  */
 package cuadrilateroconvexo;
 
-import triangulomaximal.*;
 import java.awt.Color;
 import java.util.ArrayList;
 

@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-class CvArregloLineas extends Canvas {
+class CvTriangulos extends Canvas {
 
     Vector<Point2D> v = new Vector<Point2D>();
     Vector<Point2D> vBlue = new Vector<Point2D>();
@@ -32,7 +32,7 @@ class CvArregloLineas extends Canvas {
     Triangulo minTri = null;
     Triangulo maxTri = null;
 
-    CvArregloLineas() {
+    CvTriangulos() {
         addMouseListener(new MouseAdapter() {
             Vector<Point2D> puntosPrimales = generarPuntosAleatorios();
             //puntosPrimales = generarPuntos();
@@ -119,15 +119,15 @@ class CvArregloLineas extends Canvas {
                 //pruebas = segmentosLinea; //para pintar una linea en segmentos 
                 //pruebas = primeras;
                 //pruebas = conLinea; //para pintar una linea en segmentos 
-                BuscadorTriangulo poli = new BuscadorTriangulo();
-                PoligonoMax poliMax = new PoligonoMax();
-                maxTri = poliMax.buscarTrianguloMin(rectasDuales.get(0));
-                minTri = poli.buscarTrianguloMin(rectasDuales.get(0));
+                BuscadorTrianguloMin poli = new BuscadorTrianguloMin();
+                BuscadorTrianguloMax poliMax = new BuscadorTrianguloMax();
+                maxTri = poliMax.buscarTrianguloExtremal(rectasDuales.get(0));
+                minTri = poli.buscarTrianguloExtremal(rectasDuales.get(0));
                 minTri = null;
                 for (Linea rectasDuale : rectasDuales) {
                     Triangulo nuevoTriangulo;
-                    BuscadorTriangulo poligono = new BuscadorTriangulo();
-                    nuevoTriangulo = poligono.buscarTrianguloMin(rectasDuale);
+                    BuscadorTrianguloMin poligono = new BuscadorTrianguloMin();
+                    nuevoTriangulo = poligono.buscarTrianguloExtremal(rectasDuale);
                     if (nuevoTriangulo != null) {
                         if (minTri == null) {
                             minTri = nuevoTriangulo;
@@ -142,8 +142,8 @@ class CvArregloLineas extends Canvas {
                 maxTri = null;
                 for (Linea rectasDuale : rectasDuales) {
                     Triangulo nuevoTriangulo;
-                    PoligonoMax poligono = new PoligonoMax();
-                    nuevoTriangulo = poligono.buscarTrianguloMin(rectasDuale);
+                    BuscadorTrianguloMax poligono = new BuscadorTrianguloMax();
+                    nuevoTriangulo = poligono.buscarTrianguloExtremal(rectasDuale);
                     if (nuevoTriangulo != null) {
                         if (maxTri == null) {
                             maxTri = nuevoTriangulo;
@@ -271,7 +271,7 @@ class CvArregloLineas extends Canvas {
         try {
             ImageIO.write(bufferedImage, "png", file);
         } catch (IOException ex) {
-            Logger.getLogger(CvArregloLineas.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CvTriangulos.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

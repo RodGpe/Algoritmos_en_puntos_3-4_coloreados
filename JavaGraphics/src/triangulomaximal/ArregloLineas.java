@@ -22,7 +22,7 @@ public class ArregloLineas extends Frame {
         });
         setSize(1366, 768); //original 500, 300
         setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
-        add("Center", new CvArregloLineas());
+        add("Center", new CvTriangulos());
         setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         setVisible(true);
     }

@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /**
- * El poligono cierre convexo se recorre en sentido antihorario
- *
+ * El cierre convexo azul se construye en sentido horario y desmantela en sentido antihorario
+ * 
  * @author Rodrigo
  */
-public class BuscadorTriangulo {
+public class BuscadorTrianguloMin {
 
     int cardinalidad;
     PuntoPoligono ultimoInsertado;
@@ -28,7 +28,7 @@ public class BuscadorTriangulo {
     Triangulo minimo = null;
 
     public static void main(String[] args) {
-        BuscadorTriangulo poli = new BuscadorTriangulo();
+        BuscadorTrianguloMin poli = new BuscadorTrianguloMin();
 //        poli.permute(poli.coloresDisponibles);
 //        System.out.println("------");
 //        System.out.println("------");
@@ -46,7 +46,7 @@ public class BuscadorTriangulo {
         poli.referencia = new PuntoPoligono(1, 2);
         ArrayList<PuntoPoligono> puntos = poli.crearOrden2();
         poli.CrearArregloConvexo(puntos, Color.red);
-        poli.buscarYMIN(poli.ultimoInsertado); //
+        poli.buscarYExtremal(poli.ultimoInsertado); //
         poli.reverseOrder(puntos, Color.red, Color.blue);
         //double angle = poli.calcDegrees(poli.ultimoInsertado, poli.ultimoInsertado.next.peek());
         //System.out.println(angle);
@@ -59,7 +59,7 @@ public class BuscadorTriangulo {
      * @param linea
      * @return
      */
-    public Triangulo buscarTrianguloMin(Linea linea) {
+    public Triangulo buscarTrianguloExtremal(Linea linea) {
         referencia = (PuntoPoligono) linea.puntoPrimal;
         eliminarColor(linea);
         PermutadorColores permutador = new PermutadorColores();
@@ -69,7 +69,7 @@ public class BuscadorTriangulo {
             Color color1 = permutacione.get(0);
             Color color2 = permutacione.get(1);
             CrearArregloConvexo(ordenPoli, color1);
-            buscarYMIN(ultimoInsertado); //
+            buscarYExtremal(ultimoInsertado); //
             reverseOrder(ordenPoli, color1, color2);
             limpiarClase();
         }
@@ -177,7 +177,7 @@ public class BuscadorTriangulo {
         return b;
     }
 
-    public void buscarYMIN(PuntoPoligono ultimo) {
+    public void buscarYExtremal(PuntoPoligono ultimo) {
         PuntoPoligono iterador;
         PuntoPoligono minY;
         iterador = ultimo;
@@ -213,7 +213,7 @@ public class BuscadorTriangulo {
             } else if (p.color.equals(color2)) {
                 //System.out.println("busco tangente");
                 if (cardinalidad == 1) {
-                    tangente = inicioBusqueda;
+                    tangente = inicioBusqueda; //es correcto porque siempre que busco tangentes actualizo el inicio de busqueda
                     System.out.println(color2.toString() + p.x + " " + p.y);
                     System.out.println("tangente " + tangente.x + " " + tangente.y);
                     System.out.println("area " + (area2(referencia, p, tangente)) / 2);

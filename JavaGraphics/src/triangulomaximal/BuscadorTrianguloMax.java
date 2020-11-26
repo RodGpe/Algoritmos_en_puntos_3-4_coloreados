@@ -9,10 +9,10 @@ package triangulomaximal;
  *
  * @author Rodrigo
  */
-public class PoligonoMax extends BuscadorTriangulo {
+public class BuscadorTrianguloMax extends BuscadorTrianguloMin {
 
     public static void main(String[] args) {
-        PoligonoMax poliM = new PoligonoMax();
+        BuscadorTrianguloMax poliM = new BuscadorTrianguloMax();
 
     }
 
@@ -70,7 +70,7 @@ public class PoligonoMax extends BuscadorTriangulo {
     }
 
     @Override
-    public void buscarYMIN(PuntoPoligono ultimo) {
+    public void buscarYExtremal(PuntoPoligono ultimo) {
         PuntoPoligono iterador;
         PuntoPoligono maxY;
         iterador = ultimo;
