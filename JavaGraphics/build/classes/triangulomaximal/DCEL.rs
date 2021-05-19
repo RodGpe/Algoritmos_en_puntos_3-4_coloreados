@@ -1,0 +1,5 @@
+triangulomaximal.Vertex
+triangulomaximal.DCEL
+triangulomaximal.HalfEdge
+triangulomaximal.Face
+triangulomaximal.Linea

@@ -1,0 +1,2 @@
+triangulomaximal.BuscadorTrianguloMin
+triangulomaximal.PuntoPoligono

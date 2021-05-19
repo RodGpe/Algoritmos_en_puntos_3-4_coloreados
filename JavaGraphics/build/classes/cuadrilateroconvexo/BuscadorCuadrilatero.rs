@@ -1,0 +1,3 @@
+cuadrilateroconvexo.BuscadorCuadrilatero
+cuadrilateroconvexo.SegmentoSoporte
+cuadrilateroconvexo.PuntoInfoConvex

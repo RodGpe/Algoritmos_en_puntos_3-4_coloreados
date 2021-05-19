@@ -1,0 +1,5 @@
+cuadrilateroconvexo.Linea
+cuadrilateroconvexo.HalfEdge
+cuadrilateroconvexo.Face
+cuadrilateroconvexo.Vertex
+cuadrilateroconvexo.DCEL
