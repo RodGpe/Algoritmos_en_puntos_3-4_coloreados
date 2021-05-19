@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package cuadrilateroconvexo;
 
 import java.awt.*;
@@ -29,7 +28,7 @@ public class CuadrilateroHeterocromatico extends Frame {
             }
         });
         setSize(1366, 768); //original 500, 300
-        setExtendedState(getExtendedState()|JFrame.MAXIMIZED_BOTH);
+        setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         add("Center", new CvCuadrilateroHeterocromatico());
         setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         setVisible(true);

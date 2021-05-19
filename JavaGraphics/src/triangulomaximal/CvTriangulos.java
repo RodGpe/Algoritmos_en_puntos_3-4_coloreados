@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
 class CvTriangulos extends Canvas {
 
     Vector<Point2D> v = new Vector<Point2D>();
-    Vector<Point2D> vBlue = new Vector<Point2D>();
+    //Vector<Point2D> vBlue = new Vector<Point2D>();
     //float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     float x0, y0, rWidth = 10F, rHeight = 10.0F, pixelSize; //originalmete rHeight = 7.5F
     boolean ready = true;
@@ -32,15 +32,46 @@ class CvTriangulos extends Canvas {
     Triangulo minTri = null;
     Triangulo maxTri = null;
 
-    CvTriangulos() {
-        addMouseListener(new MouseAdapter() {
-            Vector<Point2D> puntosPrimales = generarPuntosAleatorios();
-            //puntosPrimales = generarPuntos();
-            //puntosPrimales  = generarPuntosAleatorios();
-            //Vector<Point2D> puntosPrimales = generarPuntosPrueba2();
+    Vector<Point2D> puntosPrimales = generarPuntosAleatorios();
 
-            public void mousePressed(MouseEvent evt) {
-                DCEList dcel = new DCEList();
+    CvTriangulos() {
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            //71 es la g
+            //67 es la c
+            @Override
+            public void keyPressed(KeyEvent e) {
+                int key = e.getKeyCode();
+                System.out.println(key);
+                if (key == 71) {
+                    System.out.println("tecla g");
+                    puntosPrimales = generarPuntosAleatorios();
+                    repaint();
+                }
+
+                if (key == 67) {
+                    try {
+                        System.out.println("tecla c");
+                        generarPuntosCalcularTriangulo();
+                    } catch (Exception ee) {
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+        });
+    }
+
+    void generarPuntosCalcularTriangulo() {
+        limpiarVariables();
+        puntosPrimales = generarPuntosAleatorios();
+        DCEList dcel = new DCEList();
 //                Vertex v10 = new Vertex(-5, 5, null);
 //                Vertex v20 = new Vertex(7, -4, null);
 //                HalfEdge linea = new HalfEdge(null, null, null, null, null);
@@ -55,110 +86,109 @@ class CvTriangulos extends Canvas {
 //                e2010.prev = linea;
 //                e2010.twin = linea;
 
-                ArrayList<Point2D> intersecciones = new ArrayList<Point2D>();
-                for (int i = 0; i < puntosPrimales.size(); i++) {
-                    for (int j = i; j < puntosPrimales.size(); j++) {
-                        if (i != j) { // no intersecamos rectas que son iguales
-                            intersecciones.add(calcularInterseccionDual(puntosPrimales.get(i), puntosPrimales.get(j), null));
-                        }
-                    }
+        ArrayList<Point2D> intersecciones = new ArrayList<Point2D>();
+        for (int i = 0; i < puntosPrimales.size(); i++) {
+            for (int j = i; j < puntosPrimales.size(); j++) {
+                if (i != j) { // no intersecamos rectas que son iguales
+                    intersecciones.add(calcularInterseccionDual(puntosPrimales.get(i), puntosPrimales.get(j), null));
                 }
-                float extD = 0, extI = 0, extS = 0, extIn = 0;
-                for (Point2D interseccione : intersecciones) {
-                    if (Math.abs(interseccione.x) > extD) {
-                        extD = Math.abs(interseccione.x);
-                        extI = -(Math.abs(interseccione.x));
-                        rWidth = (Math.abs(interseccione.x) * 2) + 3;
-                    }
-                    if (Math.abs(interseccione.y) > extS) {
-                        extS = Math.abs(interseccione.y);
-                        extIn = -(Math.abs(interseccione.y));
-                        rHeight = (Math.abs(interseccione.y) * 2) + 3;
-                    }
+            }
+        }
+        float extD = 0, extI = 0, extS = 0, extIn = 0;
+        for (Point2D interseccione : intersecciones) {
+            if (Math.abs(interseccione.x) > extD) {
+                extD = Math.abs(interseccione.x);
+                extI = -(Math.abs(interseccione.x));
+                rWidth = (Math.abs(interseccione.x) * 2) + 3;
+            }
+            if (Math.abs(interseccione.y) > extS) {
+                extS = Math.abs(interseccione.y);
+                extIn = -(Math.abs(interseccione.y));
+                rHeight = (Math.abs(interseccione.y) * 2) + 3;
+            }
 //                    System.out.println("inter at   " + interseccione.x);
 //                    System.out.println("nueva extD " + extD);
 
-                    //System.out.println("inter at   " + interseccione.y);
-                    //System.out.println("nueva extD " + extS);
-                }
-                extD = extD + 1;
-                extS = extS + 1;
-                extI = extI - 1;
-                extIn = extIn - 1;
-                //rWidth = 102;
-                //rHeight = 102;
-                //dcel.crearBoundingBox(50, -50, 50, -50, edgeList, vertexList, faceList);
-                dcel.crearBoundingBox(extD, extI, extS, extIn, edgeList, vertexList, faceList);
+            //System.out.println("inter at   " + interseccione.y);
+            //System.out.println("nueva extD " + extS);
+        }
+        extD = extD + 1;
+        extS = extS + 1;
+        extI = extI - 1;
+        extIn = extIn - 1;
+        //rWidth = 102;
+        //rHeight = 102;
+        //dcel.crearBoundingBox(50, -50, 50, -50, edgeList, vertexList, faceList);
+        dcel.crearBoundingBox(extD, extI, extS, extIn, edgeList, vertexList, faceList);
 
-                rectasDuales = transformarPuntosaRectas(puntosPrimales);
-                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba());
-                //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba2());
-                //rectasDuales = transformarPuntosaRectas(generarPuntos());
+        rectasDuales = transformarPuntosaRectas(puntosPrimales);
+        //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba());
+        //rectasDuales = transformarPuntosaRectas(generarPuntosPrueba2());
+        //rectasDuales = transformarPuntosaRectas(generarPuntos());
 
 //                rWidth = 192;
 //                rHeight = 192;
 //                dcel.crearBoundingBox(90, -90, 90, -90, edgeList, vertexList, faceList);
-                for (Linea dual : rectasDuales) {
-                    dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
-                    //primeras.add(new HalfEdge(dual.primerArista.origin, dual.primerArista.next, dual.primerArista.prev, dual.primerArista.twin, dual.primerArista.face));
-                    //primeras.add(dual.primerArista);
-                }
-                //este for debe ir despues porque el dual.arista se puede actualizar por cada linea agregada
-                for (Linea dual : rectasDuales) {
-                    primeras.add(dual.primerArista);
-                }
+        for (Linea dual : rectasDuales) {
+            dual.primerArista = dcel.agregarLineaArreglo(edgeList, vertexList, faceList, dual);
+            //primeras.add(new HalfEdge(dual.primerArista.origin, dual.primerArista.next, dual.primerArista.prev, dual.primerArista.twin, dual.primerArista.face));
+            //primeras.add(dual.primerArista);
+        }
+        //este for debe ir despues porque el dual.arista se puede actualizar por cada linea agregada
+        for (Linea dual : rectasDuales) {
+            primeras.add(dual.primerArista);
+        }
 //                ArrayList<HalfEdge> segmentosLinea = new ArrayList<>();
 //                segmentosLinea = dcel.recorrerLinea(primeras.get(1), faceList.get(1));
 
-                for (Linea rectasDuale : rectasDuales) {
-                    System.out.println("v.add(new Point2D(" + rectasDuale.puntoPrimal.x + "f, " + rectasDuale.puntoPrimal.y + "f));");
-                }
-                crearOrdenArribaPunto(rectasDuales, faceList.get(1), dcel);
-                //dcel.imprimirLista(edgeList);
-                //orden = dcel.obtenerOrden(primeras.get(0), faceList.get(1));
-                //pruebas = segmentosLinea; //para pintar una linea en segmentos 
-                //pruebas = primeras;
-                //pruebas = conLinea; //para pintar una linea en segmentos 
-                BuscadorTrianguloMin poli = new BuscadorTrianguloMin();
-                BuscadorTrianguloMax poliMax = new BuscadorTrianguloMax();
-                maxTri = poliMax.buscarTrianguloExtremal(rectasDuales.get(0));
-                minTri = poli.buscarTrianguloExtremal(rectasDuales.get(0));
-                minTri = null;
-                for (Linea rectasDuale : rectasDuales) {
-                    Triangulo nuevoTriangulo;
-                    BuscadorTrianguloMin poligono = new BuscadorTrianguloMin();
-                    nuevoTriangulo = poligono.buscarTrianguloExtremal(rectasDuale);
-                    if (nuevoTriangulo != null) {
-                        if (minTri == null) {
-                            minTri = nuevoTriangulo;
-                        } else {
-                            if (nuevoTriangulo.area < minTri.area) {
-                                minTri = nuevoTriangulo;
-                            }
-                        }
-
+        for (Linea rectasDuale : rectasDuales) {
+            System.out.println("v.add(new Point2D(" + rectasDuale.puntoPrimal.x + "f, " + rectasDuale.puntoPrimal.y + "f));");
+        }
+        crearOrdenArribaPunto(rectasDuales, faceList.get(1), dcel);
+        //dcel.imprimirLista(edgeList);
+        //orden = dcel.obtenerOrden(primeras.get(0), faceList.get(1));
+        //pruebas = segmentosLinea; //para pintar una linea en segmentos 
+        //pruebas = primeras;
+        //pruebas = conLinea; //para pintar una linea en segmentos 
+        BuscadorTrianguloMin poli = new BuscadorTrianguloMin();
+        BuscadorTrianguloMax poliMax = new BuscadorTrianguloMax();
+        maxTri = poliMax.buscarTrianguloExtremal(rectasDuales.get(0));
+        minTri = poli.buscarTrianguloExtremal(rectasDuales.get(0));
+        minTri = null;
+        for (Linea rectasDuale : rectasDuales) {
+            Triangulo nuevoTriangulo;
+            BuscadorTrianguloMin poligono = new BuscadorTrianguloMin();
+            nuevoTriangulo = poligono.buscarTrianguloExtremal(rectasDuale);
+            if (nuevoTriangulo != null) {
+                if (minTri == null) {
+                    minTri = nuevoTriangulo;
+                } else {
+                    if (nuevoTriangulo.area < minTri.area) {
+                        minTri = nuevoTriangulo;
                     }
                 }
-                maxTri = null;
-                for (Linea rectasDuale : rectasDuales) {
-                    Triangulo nuevoTriangulo;
-                    BuscadorTrianguloMax poligono = new BuscadorTrianguloMax();
-                    nuevoTriangulo = poligono.buscarTrianguloExtremal(rectasDuale);
-                    if (nuevoTriangulo != null) {
-                        if (maxTri == null) {
-                            maxTri = nuevoTriangulo;
-                        } else {
-                            if (nuevoTriangulo.area > maxTri.area) {
-                                maxTri = nuevoTriangulo;
-                            }
-                        }
 
-                    }
-                }
-                pruebas = edgeList;
-                repaint();
             }
-        });
+        }
+        maxTri = null;
+        for (Linea rectasDuale : rectasDuales) {
+            Triangulo nuevoTriangulo;
+            BuscadorTrianguloMax poligono = new BuscadorTrianguloMax();
+            nuevoTriangulo = poligono.buscarTrianguloExtremal(rectasDuale);
+            if (nuevoTriangulo != null) {
+                if (maxTri == null) {
+                    maxTri = nuevoTriangulo;
+                } else {
+                    if (nuevoTriangulo.area > maxTri.area) {
+                        maxTri = nuevoTriangulo;
+                    }
+                }
+
+            }
+        }
+        pruebas = edgeList;
+        repaint();
+
     }
 
     void initgr() {
@@ -439,5 +469,16 @@ class CvTriangulos extends Canvas {
             }
             Collections.reverse(linea.puntoPrimal.orden);
         }
+    }
+
+    public void limpiarVariables() {
+        vertexList = new ArrayList<Vertex>();
+        pruebas = new ArrayList<HalfEdge>();
+        faceList = new ArrayList<Face>();
+        rectasDuales = new ArrayList<>();
+        orden = new ArrayList<>();
+        primeras = new ArrayList<HalfEdge>();
+        minTri = null;
+        maxTri = null;
     }
 }

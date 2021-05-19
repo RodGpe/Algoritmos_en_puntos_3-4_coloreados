@@ -6,14 +6,14 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JFrame;
 
-public class ArregloLineas extends Frame {
+public class TrianguloHeterocromatico extends Frame {
 
     public static void main(String[] args) {
 
-        ArregloLineas ventana = new ArregloLineas();
+        TrianguloHeterocromatico ventana = new TrianguloHeterocromatico();
     }
 
-    ArregloLineas() {
+    TrianguloHeterocromatico() {
         super("Define polygon vertices by clicking");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
