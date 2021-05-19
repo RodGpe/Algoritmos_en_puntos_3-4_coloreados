@@ -1,4 +1,4 @@
-# Java_graphics
+# Algoritmos_en_puntos_3-4_coloreados
 ## Implementación del algoritmo que busca el triángulo heterocromático de mayor y menor área en un conjunto de puntos 3 coloreado
 Para correr las clases de java el directorio de trabajo debe ser la carpeta `classes` y usar el comando ` java cuadrilateroconvexo/CuadrilateroHeterocromatico`, por ejemplo:
 ```console
